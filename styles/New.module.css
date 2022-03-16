@@ -1,0 +1,85 @@
+.container {
+  display: relative;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  padding: 10px;
+  box-shadow: 5px 8px 24px 5px rgba(208, 216, 243, 0.6);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}
+
+.next {
+  /* margin-right: 20%; */
+}
+
+.back {
+  /* margin-left: 20%; */
+}
+
+.button {
+  min-width: 206px;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+  flex-direction: column;
+}
+
+.inputWrapper {
+  width: 40%;
+  height: 30px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 100px;
+}
+
+.input {
+  height: 60px;
+  font-size: 24px;
+}
+
+.description {
+  width: 40%;
+  margin: 10px;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  .inputWrapper {
+    width: 90%;
+  }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  .inputWrapper {
+    width: 80%;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  .inputWrapper {
+    width: 60%;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+}

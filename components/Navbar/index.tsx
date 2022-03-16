@@ -16,9 +16,13 @@ function Navbar() {
       </div>
       <div className={styles.left}>
         <div className={styles.create}>
-          <Button type="primary" shape="round" icon={<PlusCircleOutlined />} size="large">
-            Create
-          </Button>
+          <Link href="/new/title">
+            <a>
+              <Button type="primary" shape="round" icon={<PlusCircleOutlined />} size="large">
+                Create
+              </Button>
+            </a>
+          </Link>
         </div>
         <div>
           <Avatar size={48} icon={<UserOutlined />} />
