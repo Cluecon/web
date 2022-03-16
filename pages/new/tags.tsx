@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import {Button, Typography, Input} from 'antd'
 import Link from 'next/link'
 import styles from '../../styles/New.module.css'
@@ -6,31 +6,9 @@ import {useNewEventContext} from '../../context/newEvent'
 
 const {Title} = Typography
 
-type ITag = {
-  name: string
-  isSelected: boolean
-}
-
 function Tags() {
-  const [tags, setTags] = useState<ITag[]>([
-    {name: 'sports', isSelected: false},
-    {name: 'music', isSelected: false},
-    {name: 'soccer', isSelected: false},
-    {name: 'basketball', isSelected: false},
-    {name: 'hiking', isSelected: false},
-    {name: 'clubbing', isSelected: false},
-  ])
   const [inputValue, setInputValue] = useState('')
   const {event, updateNewEvent} = useNewEventContext()
-
-  useEffect(() => {
-    console.log('present tags', event?.tags)
-    if (event?.tags) {
-      const presentTags = event.tags.map((t) => ({name: t, isSelected: true}))
-      console.log(tags)
-      setTags({...tags, ...presentTags})
-    }
-  }, [])
 
   return (
     <>
@@ -42,9 +20,12 @@ function Tags() {
             <Input
               onKeyDown={(e) => {
                 if (inputValue.length >= 3 && e.key == 'Enter') {
-                  const newList = tags.filter((tag) => tag.name != inputValue)
-                  setTags([...newList, {name: inputValue, isSelected: true}])
-                  updateNewEvent && updateNewEvent({...event, tags: tags.map((t) => t.name)})
+                  const newList =
+                    event?.tags &&
+                    event?.tags.filter((tag) => tag.name.toLocaleLowerCase() != inputValue.toLocaleLowerCase())
+                  updateNewEvent &&
+                    newList &&
+                    updateNewEvent({...event, tags: [...newList, {name: inputValue, isSelected: true}]})
                   setInputValue('')
                 }
               }}
@@ -56,22 +37,25 @@ function Tags() {
             />
           </div>
           <div className={styles.tags}>
-            {tags.length > 0 &&
-              tags.map((tag: {name: string; isSelected: boolean}, i: number) => (
-                <Button
-                  key={i}
-                  style={{marginRight: 10, marginTop: 10}}
-                  type={tag.isSelected ? 'primary' : 'dashed'}
-                  shape="round"
-                  size="large"
-                  onClick={() => {
-                    const newArray = tags.filter((t) => t.name != tag.name)
-                    setTags([...newArray, {name: tag.name, isSelected: !tag.isSelected}])
-                  }}
-                >
-                  {tag.name}
-                </Button>
-              ))}
+            {event?.tags?.map((tag: {name: string; isSelected: boolean}, i: number) => (
+              <Button
+                key={i}
+                style={{marginRight: 10, marginTop: 10}}
+                type={tag.isSelected ? 'primary' : 'dashed'}
+                shape="round"
+                size="large"
+                onClick={() => {
+                  const newArray = event?.tags?.filter(
+                    (t) => t.name.toLocaleLowerCase() != tag.name.toLocaleLowerCase()
+                  )
+                  updateNewEvent &&
+                    newArray &&
+                    updateNewEvent({...event, tags: [...newArray, {name: tag.name, isSelected: true}]})
+                }}
+              >
+                {tag.name}
+              </Button>
+            ))}
           </div>
         </div>
         <div className={styles.footer}>
@@ -87,15 +71,7 @@ function Tags() {
           <div className={styles.next}>
             <Link href="/new/art">
               <a>
-                <Button
-                  className={styles.button}
-                  type="primary"
-                  shape="round"
-                  size="large"
-                  onClick={() => {
-                    updateNewEvent && updateNewEvent({...event, tags: tags.map((t) => t.name)})
-                  }}
-                >
+                <Button className={styles.button} type="primary" shape="round" size="large">
                   Next
                 </Button>
               </a>

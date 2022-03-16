@@ -1,6 +1,6 @@
 import React from 'react'
 import {Button, Typography, Input} from 'antd'
-import PlacesAutocomplete from 'react-places-autocomplete'
+import PlacesAutocomplete, {geocodeByAddress, getLatLng} from 'react-places-autocomplete'
 import Link from 'next/link'
 import styles from '../../styles/New.module.css'
 import {useNewEventContext} from '../../context/newEvent'
@@ -17,10 +17,16 @@ function Location() {
           <div className={styles.description}>{/* <Text>Feel free to be as descriptive as you wish</Text> */}</div>
           <div className={styles.inputWrapper}>
             <PlacesAutocomplete
-              value={event?.location}
-              onChange={(add) => updateNewEvent && updateNewEvent({...event, location: add})}
+              value={event?.location?.address}
+              onChange={(add) =>
+                updateNewEvent && updateNewEvent({...event, location: {...event?.location, address: add}})
+              }
               onSelect={(add) => {
-                console.log(add)
+                geocodeByAddress(add)
+                  .then((results) => getLatLng(results[0]))
+                  .then(({lat, lng}) => {
+                    updateNewEvent && updateNewEvent({...event, location: {lat: lat, long: lng, address: add}})
+                  })
               }}
             >
               {({getInputProps, suggestions, getSuggestionItemProps, loading}) => (

@@ -9,12 +9,12 @@ import styles from '../../styles/New.module.css'
 const {Title} = Typography
 const {Dragger} = Upload
 
-function Art() {
+function Images() {
   // const { event, updateNewEvent } = useNewEventContext()
 
-  const ticketProps = {
+  const imagesProps = {
     name: 'file',
-    multiple: false,
+    multiple: true,
     action: '',
     onChange(info: any) {
       const {status} = info.file
@@ -39,15 +39,15 @@ function Art() {
           <Title style={{textAlign: 'center'}}>Upload Images</Title>
           <div className={styles.inputWrapper}>
             <Title level={5} style={{textAlign: 'center'}}>
-              Custom Ticket Art (Optional)
+              Event Images (Optional)
             </Title>
             <div>
-              <Dragger {...ticketProps}>
+              <Dragger {...imagesProps}>
                 <p className="ant-upload-drag-icon">
                   <InboxOutlined />
                 </p>
                 <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                <p className="ant-upload-hint">Upload an artwork to be used in the ticket issued to buyers</p>
+                <p className="ant-upload-hint">Upload event cover images (You can upload multiple images)</p>
               </Dragger>
             </div>
           </div>
@@ -63,13 +63,9 @@ function Art() {
             </Link>
           </div>
           <div className={styles.next}>
-            <Link href="/new/images">
-              <a>
-                <Button className={styles.button} type="primary" shape="round" size="large">
-                  Next
-                </Button>
-              </a>
-            </Link>
+            <Button className={styles.button} type="primary" shape="round" size="large">
+              Create
+            </Button>
           </div>
         </div>
       </div>
@@ -77,4 +73,4 @@ function Art() {
   )
 }
 
-export default Art
+export default Images

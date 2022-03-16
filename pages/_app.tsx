@@ -9,7 +9,7 @@ function MyApp({Component, pageProps}: AppProps) {
   return (
     <>
       <Script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBL1VzSZF3-TRwoydxYzgpxmkRZDHwnKJY&libraries=places"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAGvZcCyI8iQgz9NwFgPJ0bKQAiwwrO13s&libraries=places"
         strategy="beforeInteractive"
       />
       <Navbar />
