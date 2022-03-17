@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+  width: 80%;
+  margin: 0 auto;
+}
+
+.body {
+  margin-top: 20px;
+  margin-right: 20px;
+  width: 65%;
+  background-color: green;
+}
+
+.sticker {
+  margin-top: 20px;
+  width: 30%;
+}
+
+.button {
+  min-width: 206px;
+}
