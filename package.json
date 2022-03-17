@@ -12,6 +12,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "antd": "^4.19.2",
+    "ipfs-http-client": "^56.0.1",
     "next": "12.1.0",
     "next-plugin-antd-less": "^1.8.0",
     "nextjs-progressbar": "^0.0.14",

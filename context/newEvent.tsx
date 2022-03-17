@@ -19,11 +19,16 @@ export type INewEvent = {
     endDate: string | null
   }
   classes?: {
+    id: number
     name: string
     price: string
+    amount: string
   }[]
   ticketArt?: string
-  artProps?: string[]
+  covers?: {
+    name: string
+    url: string
+  }[]
 }
 
 export type INewEventContext = {
