@@ -65,11 +65,7 @@ function Images() {
         message.success(`${info.file.name} file uploaded successfully.`)
         uploadFile(info.file.originFileObj)
           .then((file: any) => {
-            const newCovers =
-              event?.covers && event?.covers?.length > 0
-                ? [...event?.covers, {name: info.file.name, url: `https://dev-ipfs.clueconn.com/ipfs/${file.path}`}]
-                : [{url: `https://dev-ipfs.clueconn.com/ipfs/${file.path}`, name: info.file.name}]
-            updateNewEvent && updateNewEvent({...event, covers: newCovers})
+            updateNewEvent && updateNewEvent({...event, covers: `https://dev-ipfs.clueconn.com/ipfs/${file.path}`})
           })
           .catch((err) => {
             console.log('err', err)
@@ -78,10 +74,6 @@ function Images() {
       } else if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`)
       }
-    },
-    onRemove(file: any) {
-      updateNewEvent &&
-        updateNewEvent({...event, covers: event?.covers?.filter((cv) => cv.name != file.originFileObj.name)})
     },
   }
 
@@ -95,13 +87,38 @@ function Images() {
               Event Images (Optional)
             </Title>
             <div>
-              <Dragger {...imagesProps}>
-                <p className="ant-upload-drag-icon">
-                  <InboxOutlined />
-                </p>
-                <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                <p className="ant-upload-hint">Upload event cover images (You can upload multiple images)</p>
-              </Dragger>
+              {!event?.ticketArt ? (
+                <Dragger {...imagesProps}>
+                  <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                  </p>
+                  <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                  <p className="ant-upload-hint">Upload event cover images (You can upload multiple images)</p>
+                </Dragger>
+              ) : (
+                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    width={300}
+                    height={300}
+                    // layout="responsive"
+                    src={event.ticketArt}
+                    alt={event.title}
+                    style={{marginBottom: 10}}
+                  />
+                  <Button
+                    className={styles.button}
+                    type="default"
+                    shape="round"
+                    size="large"
+                    onClick={() => {
+                      updateNewEvent && updateNewEvent({...event, ticketArt: undefined})
+                    }}
+                  >
+                    Replace
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
