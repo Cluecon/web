@@ -4,6 +4,9 @@
 const withAntdLess = require('next-plugin-antd-less')
 
 module.exports = withAntdLess({
+  images: {
+    domains: ['dev-ipfs.clueconn.com', 'ipfs.clueconn.com'],
+  },
   reactStrictMode: true,
   // optional: you can modify antd less variables directly here
   modifyVars: {

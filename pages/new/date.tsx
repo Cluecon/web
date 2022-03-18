@@ -29,7 +29,6 @@ function Date() {
                 const startDate = d && moment.utc(d[0]).format()
                 const endDate = d && moment.utc(d[1]).format()
                 updateNewEvent && updateNewEvent({...event, date: {startDate: startDate, endDate: endDate}})
-                console.log(typeof d, d && d[0])
               }}
             />
           </div>

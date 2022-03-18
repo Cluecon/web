@@ -6,6 +6,7 @@ export type ITag = {
 }
 
 export type INewEvent = {
+  ownerAddress?: string
   title?: string
   description?: string
   location?: {
@@ -19,11 +20,13 @@ export type INewEvent = {
     endDate: string | null
   }
   classes?: {
+    id: number
     name: string
     price: string
+    amount: string
   }[]
   ticketArt?: string
-  artProps?: string[]
+  covers?: string
 }
 
 export type INewEventContext = {

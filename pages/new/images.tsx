@@ -3,14 +3,54 @@ import React from 'react'
 import {Button, Typography, Upload, message} from 'antd'
 import {InboxOutlined} from '@ant-design/icons'
 import Link from 'next/link'
+import {create} from 'ipfs-http-client'
 import styles from '../../styles/New.module.css'
-// import { useNewEventContext } from '../../context/newEvent';
+import {useNewEventContext} from '../../context/newEvent'
+import Router, {useRouter} from 'next/router'
 
 const {Title} = Typography
 const {Dragger} = Upload
 
+const IpfsClient = create({url: ' https://dev-ipfs.clueconn.com'})
+
+async function uploadFile(file: File) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      // @ts-ignore
+      const buffer = Buffer.from(reader.result)
+      IpfsClient.add(buffer)
+        .then((files) => {
+          resolve(files)
+        })
+        .catch((error) => reject(error))
+    }
+    reader.readAsArrayBuffer(file)
+  })
+}
+
 function Images() {
-  // const { event, updateNewEvent } = useNewEventContext()
+  const {push} = useRouter()
+  const {event, updateNewEvent} = useNewEventContext()
+
+  async function uploadToIpfs() {
+    if (!event?.title) {
+      push('/new/title')
+    } else if (!event.description) {
+      push('/new/description')
+    } else if (!event.location) {
+      push('/new/location')
+    } else if (!event.date) {
+      Router.push('/new/date')
+    } else if (!event.classes) {
+      push('/new/classes')
+    } else {
+      const uploaded = await IpfsClient.add(JSON.stringify(event))
+      const contentIpfsUrl = `https://dev-ipfs.clueconn.com/ipfs/${uploaded.path}`
+      console.log('uploaded', contentIpfsUrl)
+      // TODO: Save to blockchain
+    }
+  }
 
   const imagesProps = {
     name: 'file',
@@ -19,16 +59,21 @@ function Images() {
     onChange(info: any) {
       const {status} = info.file
       if (status !== 'uploading') {
-        console.log(info.file, info.fileList)
+        console.log('Uploading')
       }
       if (status === 'done') {
         message.success(`${info.file.name} file uploaded successfully.`)
+        uploadFile(info.file.originFileObj)
+          .then((file: any) => {
+            updateNewEvent && updateNewEvent({...event, covers: `https://dev-ipfs.clueconn.com/ipfs/${file.path}`})
+          })
+          .catch((err) => {
+            console.log('err', err)
+            message.error(`Error uploading file`)
+          })
       } else if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`)
       }
-    },
-    onDrop(e: any) {
-      console.log('Dropped files', e.dataTransfer.files)
     },
   }
 
@@ -42,13 +87,38 @@ function Images() {
               Event Images (Optional)
             </Title>
             <div>
-              <Dragger {...imagesProps}>
-                <p className="ant-upload-drag-icon">
-                  <InboxOutlined />
-                </p>
-                <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                <p className="ant-upload-hint">Upload event cover images (You can upload multiple images)</p>
-              </Dragger>
+              {!event?.ticketArt ? (
+                <Dragger {...imagesProps}>
+                  <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                  </p>
+                  <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                  <p className="ant-upload-hint">Upload event cover images (You can upload multiple images)</p>
+                </Dragger>
+              ) : (
+                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    width={300}
+                    height={300}
+                    // layout="responsive"
+                    src={event.ticketArt}
+                    alt={event.title}
+                    style={{marginBottom: 10}}
+                  />
+                  <Button
+                    className={styles.button}
+                    type="default"
+                    shape="round"
+                    size="large"
+                    onClick={() => {
+                      updateNewEvent && updateNewEvent({...event, ticketArt: undefined})
+                    }}
+                  >
+                    Replace
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -63,7 +133,7 @@ function Images() {
             </Link>
           </div>
           <div className={styles.next}>
-            <Button className={styles.button} type="primary" shape="round" size="large">
+            <Button className={styles.button} type="primary" shape="round" size="large" onClick={uploadToIpfs}>
               Create
             </Button>
           </div>
