@@ -25,6 +25,7 @@ function EventBody() {
           alt="Picture of the author"
           width="100%"
           style={{borderRadius: '50px'}}
+          preview={false}
         />
       </div>
       <div style={{marginTop: 30}}>
