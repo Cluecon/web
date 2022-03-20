@@ -5,3 +5,96 @@
 
 .lineChart {
 }
+
+.soldCard {
+  margin-top: 50px !important;
+}
+
+.soldCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progressWrapper {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.eventsProgressWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.eventProgress {
+  margin: 10px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.eventText {
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+.overview {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.overviewItem {
+  width: 50%;
+}
+
+.overViewStats {
+  display: flex;
+  align-items: center;
+}
+
+.overviewStatsCard {
+  margin: 10px 30px 10px 10px;
+}
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  .overviewItem {
+    width: 100%;
+  }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  .soldCard {
+    width: 80%;
+    margin: 0 auto;
+  }
+  .overviewItem {
+    width: 80%;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  .overviewItem {
+    width: 70%;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  .overviewItem {
+    width: 60%;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  .overviewItem {
+    width: 50%;
+  }
+}

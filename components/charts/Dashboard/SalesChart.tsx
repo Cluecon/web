@@ -6,7 +6,7 @@ import styles from '../../../styles/EventDashboard.module.css'
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
 export const LineOptions = {
-  responsive: true,
+  // responsive: true,
   plugins: {
     legend: {
       position: 'top' as const,
