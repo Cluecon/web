@@ -10,22 +10,24 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@ant-design/icons": "^4.7.0",
-    "add": "^2.0.6",
     "antd": "^4.19.2",
+    "chart.js": "^3.7.1",
     "ipfs-http-client": "^56.0.1",
+    "lodash": "^4.17.20",
     "next": "12.1.0",
     "next-plugin-antd-less": "^1.8.0",
     "next-usequerystate": "^1.7.2",
     "nextjs-progressbar": "^0.0.14",
     "react": "17.0.2",
+    "react-chartjs-2": "^4.0.1",
     "react-copy-to-clipboard": "^5.0.4",
     "react-dom": "17.0.2",
     "react-places-autocomplete": "^7.3.0",
-    "react-select": "^5.2.2",
-    "yarn": "^1.22.17"
+    "react-select": "^5.2.2"
   },
   "devDependencies": {
+    "@faker-js/faker": "^6.0.0",
+    "@types/lodash": "^4.14.180",
     "@types/node": "17.0.21",
     "@types/react": "17.0.40",
     "@types/react-copy-to-clipboard": "^5.0.2",
