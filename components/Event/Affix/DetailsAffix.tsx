@@ -1,18 +1,39 @@
-import React, {useState} from 'react'
-import {Card, Affix, Typography, Button} from 'antd'
+import React, { useState } from 'react'
+import { Card, Affix, Typography, Button } from 'antd'
 import Select from 'react-select'
 import styles from '../../../styles/Details.module.css'
 
-const {Title} = Typography
+const { Title } = Typography
 
-const options = [
-  {value: 'VIP', label: 'VIP'},
-  {value: 'Early Birds', label: 'Early Birds'},
-  {value: 'Regular', label: 'Regular'},
-]
+export type IClass = {
+  id: number
+  name: string
+  price: string
+  amount: string
+}
 
-function DetailsAffix() {
-  const [selectedOption, setSelectedOption] = useState(null)
+export type DetailsAffixProps = {
+  classes?: IClass[]
+}
+
+function DetailsAffix(props: DetailsAffixProps) {
+  const options = props.classes?.map((cl) => {
+    return {
+      value: cl.name,
+      label: cl.name,
+    }
+  })
+  const [selectedOption, setSelectedOption] = useState<{ label: string; value: string } | null>(null)
+
+  function renderPrice() {
+    if (!props.classes) {
+      return 'Free'
+    }
+    if (selectedOption) {
+      return props.classes ? props.classes.filter((c) => c.name == selectedOption.value)[0].price : ''
+    }
+  }
+
   return (
     <>
       <Affix offsetTop={20}>
@@ -33,10 +54,11 @@ function DetailsAffix() {
                 },
               })}
             />
-            <Title style={{marginTop: 20}} level={5}>
-              From $70 (1 SOL)
+            <Title style={{ marginTop: 20 }} level={5}>
+              ${renderPrice()}
+              {/* From $70 (1 SOL) */}
             </Title>
-            <Button style={{marginTop: 20}} className={styles.button} type="primary" shape="round" size="large">
+            <Button style={{ marginTop: 20 }} className={styles.button} type="primary" shape="round" size="large">
               Buy Ticket
             </Button>
           </>

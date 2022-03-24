@@ -1,56 +1,52 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
-import {Button, Typography, Upload, message} from 'antd'
-import {InboxOutlined} from '@ant-design/icons'
+import { Button, Typography, Upload, message } from 'antd'
+import { InboxOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import styles from '../../styles/New.module.css'
-import {create} from 'ipfs-http-client'
-import {useNewEventContext} from '../../context/newEvent'
+import { create as ipfsHttpClient } from 'ipfs-http-client'
+import { useNewEventContext } from '../../context/newEvent'
 
-const IpfsClient = create({url: ' https://dev-ipfs.clueconn.com'})
+const client = ipfsHttpClient({ url: 'https://ipfs.infura.io:5001/api/v0' })
 
-const {Title} = Typography
-const {Dragger} = Upload
+const { Title } = Typography
+const { Dragger } = Upload
 
-async function uploadFile(file: File) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      // @ts-ignore
-      const buffer = Buffer.from(reader.result)
-      IpfsClient.add(buffer)
-        .then((files) => {
-          resolve(files)
-        })
-        .catch((error) => reject(error))
-    }
-    reader.readAsArrayBuffer(file)
-  })
+async function uploadImageToIpfs(file: File) {
+  try {
+    const added = await client.add(file, {
+      progress: (prog) => console.log(`received: ${prog}`),
+    })
+    const url = `https://ipfs.infura.io/ipfs/${added.path}`
+    return url
+  } catch (error) {
+    console.log('Error uploading file: ', error)
+  }
 }
 
 function Art() {
-  const {event, updateNewEvent} = useNewEventContext()
+  const { event, updateNewEvent } = useNewEventContext()
 
   const ticketProps = {
     name: 'file',
     multiple: false,
     action: '',
     onChange(info: any) {
-      const {status} = info.file
+      const { status } = info.file
       if (status !== 'uploading') {
         console.log('uploading')
       }
       if (status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully.`)
-        uploadFile(info.file.originFileObj)
-          .then((file: any) => {
-            console.log(file)
-            updateNewEvent && updateNewEvent({...event, ticketArt: `https://dev-ipfs.clueconn.com/ipfs/${file.path}`})
+        uploadImageToIpfs(info.file.originFileObj)
+          .then((url: any) => {
+            console.log('url', url)
+            updateNewEvent && updateNewEvent({ ...event, ticketArt: url })
           })
           .catch((err) => {
             console.log('err', err)
             message.error(`Error uploading file`)
           })
+        message.success(`${info.file.name} file uploaded successfully.`)
       } else if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`)
       }
@@ -63,10 +59,10 @@ function Art() {
   return (
     <>
       <div className={styles.container}>
-        <div style={{position: 'relative'}} className={styles.content}>
-          <Title style={{textAlign: 'center'}}>Upload Images</Title>
+        <div style={{ position: 'relative' }} className={styles.content}>
+          <Title style={{ textAlign: 'center' }}>Upload Images</Title>
           <div className={styles.inputWrapper}>
-            <Title level={5} style={{textAlign: 'center'}}>
+            <Title level={5} style={{ textAlign: 'center' }}>
               Custom Ticket Art (Optional)
             </Title>
             <div>
@@ -79,7 +75,9 @@ function Art() {
                   <p className="ant-upload-hint">Upload an artwork to be used in the ticket issued to buyers</p>
                 </Dragger>
               ) : (
-                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                <div
+                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     width={300}
@@ -87,7 +85,7 @@ function Art() {
                     // layout="responsive"
                     src={event.ticketArt}
                     alt={event.title}
-                    style={{marginBottom: 10}}
+                    style={{ marginBottom: 10 }}
                   />
                   <Button
                     className={styles.button}
@@ -95,7 +93,7 @@ function Art() {
                     shape="round"
                     size="large"
                     onClick={() => {
-                      updateNewEvent && updateNewEvent({...event, ticketArt: undefined})
+                      updateNewEvent && updateNewEvent({ ...event, ticketArt: undefined })
                     }}
                   >
                     Replace

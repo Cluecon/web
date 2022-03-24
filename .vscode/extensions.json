@@ -3,6 +3,10 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "gruntfuggly.todo-tree",
-    "wayou.vscode-todo-highlight"
+    "wayou.vscode-todo-highlight",
+    "2gua.rainbow-brackets",
+    "usernamehw.errorlens",
+    "yzhang.markdown-all-in-one"
+
   ]
 }

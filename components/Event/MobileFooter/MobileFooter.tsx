@@ -1,24 +1,35 @@
-import React, {useState} from 'react'
-import {Card, Button, Affix, Typography} from 'antd'
+import React, { useState } from 'react'
+import { Card, Button, Affix, Typography } from 'antd'
 import Select from 'react-select'
 import styles from '../../../styles/Details.module.css'
+import { DetailsAffixProps } from '../Affix/DetailsAffix'
 
-const {Title} = Typography
+const { Title } = Typography
 
-const options = [
-  {value: 'VIP', label: 'VIP'},
-  {value: 'Early Birds', label: 'Early Birds'},
-  {value: 'Regular', label: 'Regular'},
-]
+function MobileFooter(props: DetailsAffixProps) {
+  const options = props.classes?.map((cl) => {
+    return {
+      value: cl.name,
+      label: cl.name,
+    }
+  })
+  const [selectedOption, setSelectedOption] = useState<{ label: string; value: string } | null>(null)
 
-function MobileFooter() {
-  const [selectedOption, setSelectedOption] = useState(null)
+  function renderPrice() {
+    if (!props.classes) {
+      return 'Free'
+    }
+    if (selectedOption) {
+      return props.classes ? props.classes.filter((c) => c.name == selectedOption.value)[0].price : ''
+    }
+  }
+
   return (
     <>
-      <Affix style={{width: '100%'}} offsetBottom={10}>
+      <Affix style={{ width: '100%' }} offsetBottom={10}>
         <Card
-          style={{width: '100%'}}
-          bodyStyle={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+          style={{ width: '100%' }}
+          bodyStyle={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
           <div
             style={{
@@ -30,7 +41,6 @@ function MobileFooter() {
             }}
           >
             <Select
-              width="500px"
               defaultValue={selectedOption}
               //  @ts-ignore
               onChange={setSelectedOption}
@@ -45,10 +55,10 @@ function MobileFooter() {
                 },
               })}
             />
-            <Title style={{marginTop: 20}} level={5}>
-              $70 (1 SOL)
+            <Title style={{ marginTop: 20 }} level={5}>
+              ${renderPrice()}
             </Title>
-            <Button style={{marginTop: 20}} className={styles.button} type="primary" shape="round" size="large">
+            <Button style={{ marginTop: 20 }} className={styles.button} type="primary" shape="round" size="large">
               Buy Ticket
             </Button>
           </div>

@@ -1,37 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
-import {Button, Typography, Upload, message} from 'antd'
-import {InboxOutlined} from '@ant-design/icons'
+import { Button, Typography, Upload, message } from 'antd'
+import { InboxOutlined } from '@ant-design/icons'
 import Link from 'next/link'
-import {create} from 'ipfs-http-client'
+import { create as ipfsHttpClient } from 'ipfs-http-client'
 import styles from '../../styles/New.module.css'
-import {useNewEventContext} from '../../context/newEvent'
-import Router, {useRouter} from 'next/router'
+import { useNewEventContext } from '../../context/newEvent'
+import Router, { useRouter } from 'next/router'
+import { saveEventToFirebase } from '../../services/firebase'
+import { getWeb3Address } from '../../utils/web3Login'
+import { IEvent } from '../../models/event'
 
-const {Title} = Typography
-const {Dragger} = Upload
+const { Title } = Typography
+const { Dragger } = Upload
 
-const IpfsClient = create({url: ' https://dev-ipfs.clueconn.com'})
-
-async function uploadFile(file: File) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      // @ts-ignore
-      const buffer = Buffer.from(reader.result)
-      IpfsClient.add(buffer)
-        .then((files) => {
-          resolve(files)
-        })
-        .catch((error) => reject(error))
-    }
-    reader.readAsArrayBuffer(file)
-  })
-}
+const client = ipfsHttpClient({ url: 'https://ipfs.infura.io:5001/api/v0' })
 
 function Images() {
-  const {push} = useRouter()
-  const {event, updateNewEvent} = useNewEventContext()
+  const { push } = useRouter()
+  const { event, updateNewEvent } = useNewEventContext()
 
   async function uploadToIpfs() {
     if (!event?.title) {
@@ -45,10 +32,26 @@ function Images() {
     } else if (!event.classes) {
       push('/new/classes')
     } else {
-      const uploaded = await IpfsClient.add(JSON.stringify(event))
-      const contentIpfsUrl = `https://dev-ipfs.clueconn.com/ipfs/${uploaded.path}`
-      console.log('uploaded', contentIpfsUrl)
-      // TODO: Save to blockchain
+      const tagsList = event.tags?.filter((t) => t.isSelected).map((tag) => tag.name)
+      const address = await getWeb3Address()
+      const toIpfs = { ...event, tags: tagsList, ownerAddress: address } as IEvent
+      const added = await client.add(JSON.stringify(toIpfs))
+      const jsonUrl = `https://ipfs.infura.io/ipfs/${added.path}`
+      const toUpload = { ...toIpfs, ipfsAdress: jsonUrl }
+      const firebaseEvent = (await saveEventToFirebase(toUpload)) as IEvent
+      push(`/event/${firebaseEvent.uid}`)
+    }
+  }
+
+  async function uploadImageToIpfs(file: File) {
+    try {
+      const added = await client.add(file, {
+        progress: (prog) => console.log(`received: ${prog}`),
+      })
+      const url = `https://ipfs.infura.io/ipfs/${added.path}`
+      return url
+    } catch (error) {
+      console.log('Error uploading file: ', error)
     }
   }
 
@@ -57,20 +60,21 @@ function Images() {
     multiple: true,
     action: '',
     onChange(info: any) {
-      const {status} = info.file
+      const { status } = info.file
       if (status !== 'uploading') {
         console.log('Uploading')
       }
       if (status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully.`)
-        uploadFile(info.file.originFileObj)
-          .then((file: any) => {
-            updateNewEvent && updateNewEvent({...event, covers: `https://dev-ipfs.clueconn.com/ipfs/${file.path}`})
+        uploadImageToIpfs(info.file.originFileObj)
+          .then((url: any) => {
+            console.log('url', url)
+            updateNewEvent && updateNewEvent({ ...event, covers: url })
           })
           .catch((err) => {
             console.log('err', err)
             message.error(`Error uploading file`)
           })
+        message.success(`${info.file.name} file uploaded successfully.`)
       } else if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`)
       }
@@ -80,14 +84,14 @@ function Images() {
   return (
     <>
       <div className={styles.container}>
-        <div style={{position: 'relative'}} className={styles.content}>
-          <Title style={{textAlign: 'center'}}>Upload Images</Title>
+        <div style={{ position: 'relative' }} className={styles.content}>
+          <Title style={{ textAlign: 'center' }}>Upload Images</Title>
           <div className={styles.inputWrapper}>
-            <Title level={5} style={{textAlign: 'center'}}>
+            <Title level={5} style={{ textAlign: 'center' }}>
               Event Images (Optional)
             </Title>
             <div>
-              {!event?.ticketArt ? (
+              {!event?.covers ? (
                 <Dragger {...imagesProps}>
                   <p className="ant-upload-drag-icon">
                     <InboxOutlined />
@@ -96,15 +100,17 @@ function Images() {
                   <p className="ant-upload-hint">Upload event cover images (You can upload multiple images)</p>
                 </Dragger>
               ) : (
-                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                <div
+                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     width={300}
                     height={300}
                     // layout="responsive"
-                    src={event.ticketArt}
+                    src={event.covers}
                     alt={event.title}
-                    style={{marginBottom: 10}}
+                    style={{ marginBottom: 10 }}
                   />
                   <Button
                     className={styles.button}
@@ -112,7 +118,7 @@ function Images() {
                     shape="round"
                     size="large"
                     onClick={() => {
-                      updateNewEvent && updateNewEvent({...event, ticketArt: undefined})
+                      updateNewEvent && updateNewEvent({ ...event, ticketArt: undefined })
                     }}
                   >
                     Replace

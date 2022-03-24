@@ -1,13 +1,28 @@
-import type {NextPage} from 'next'
+import type { NextPage } from 'next'
+import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
-import {Typography} from 'antd'
+import { Typography } from 'antd'
 import styles from '../styles/Home.module.css'
 import Banner from '../components/home/Banner'
 import EventCard from '../components/Card/EventCard'
+import { getEvents } from '../services/firebase'
 
-const {Title} = Typography
+const { Title } = Typography
 
 const Home: NextPage = () => {
+  const [events, setEvents] = useState<any>()
+
+  async function updateEvents() {
+    const eventsList = await getEvents()
+    setEvents(eventsList)
+  }
+
+  useEffect(() => {
+    updateEvents()
+  }, [])
+
+  console.log('events', events)
+
   return (
     <div className={styles.container}>
       <Head>
@@ -15,7 +30,7 @@ const Home: NextPage = () => {
         <meta name="description" content="A new ticketing system for event intelligence" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div style={{marginTop: 40}}>
+      <div style={{ marginTop: 40 }}>
         <Banner />
       </div>
       <div className={styles.suggestions}>
