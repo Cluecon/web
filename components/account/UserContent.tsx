@@ -1,45 +1,39 @@
-import {useRouter} from 'next/router'
 import React from 'react'
-import NavMenu from './NavMenu'
-import styles from '../../styles/UserProfile.module.css'
+// import NavMenu from './NavMenu'
 import EventCard from '../Card/EventCard'
+import { IEvent } from '../../models/event'
+import moment from 'moment'
 
-function UserContent() {
-  const events = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
-  const router = useRouter()
-  const tab = router.query.tab
+const no_image =
+  'https://firebasestorage.googleapis.com/v0/b/clueconn-73e93.appspot.com/o/no-image.jpg?alt=media&token=18825795-d81a-40dc-8721-84c6b7d0ac3b'
 
-  function renderRelated() {
-    return events.map((e, i) => {
+export type IUserContentProps = {
+  events: IEvent[]
+}
+
+function UserContent(props: IUserContentProps) {
+  function renderTickets() {
+    return props.events.map((e, i) => {
+      console.log('eeeee', e)
       return (
-        <div key={i} style={{margin: 20}}>
+        <div key={i} style={{ margin: 20 }}>
           <EventCard
-            cid="kokokokok"
-            title="Moulin Rouge! The Musical on Broadway"
-            cover="https://dev-ipfs.clueconn.com/ipfs/QmS8LtBfH4WH47xcHrJvPi7rHWLAcennA6xmhShacHgqaX"
-            strartDate="Sat, Apr 30, 12:00 PM"
-            endDate=" Sat, Apr 30, 16:00 PM"
-            location="2734 Barkley street, santa clara"
+            cid={e.uid}
+            title={e.title}
+            cover={e.ticketArt || no_image}
+            strartDate={moment(e.date.startDate).format('llll')}
+            endDate={moment(e.date.endDate).format('llll')}
+            location={e.location.address}
           />
         </div>
       )
     })
   }
 
-  function renderContent() {
-    if (tab === 'upcoming') {
-      return <div className={styles.content}>{renderRelated()}</div>
-    }
-
-    if (tab === 'myEvents') {
-      return <div className={styles.content}>{renderRelated()}</div>
-    }
-  }
-
   return (
-    <div>
-      <NavMenu />
-      {renderContent()}
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+      {/* <NavMenu /> */}
+      {renderTickets()}
     </div>
   )
 }

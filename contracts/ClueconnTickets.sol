@@ -15,7 +15,7 @@ contract ClueconnTickets is ReentrancyGuard {
 
     address payable owner;
     // price to be payed to the original event creator on ticket resale
-    uint256 ticketListingPrice = 0.025 ether;
+    uint256 ticketListingPrice = 0.010 ether;
 
     constructor() {
       owner = payable(msg.sender);
@@ -50,7 +50,8 @@ contract ClueconnTickets is ReentrancyGuard {
     function createTicket(
       address ticketContract,
       uint256 tokenId,
-      uint256 price
+      uint256 price,
+      address organizer
     ) public payable nonReentrant {
       require(msg.value == ticketListingPrice, "Price must be equal to ticket listing price");
 
@@ -61,7 +62,7 @@ contract ClueconnTickets is ReentrancyGuard {
         ticketId,
         ticketContract,
         tokenId,
-        payable(msg.sender),
+        payable(address(organizer)),
         payable(address(0)),
         price,
         false
@@ -84,8 +85,8 @@ contract ClueconnTickets is ReentrancyGuard {
       address ticketContract,
       uint256 ticketId
     ) public payable nonReentrant {
-      uint price = idToTicket[ticketId].price; 
-      uint tokenId = idToTicket[ticketId].tokenId; 
+      uint price = idToTicket[ticketId].price;
+      uint tokenId = idToTicket[ticketId].tokenId;
       require(msg.value == price, "Please submit the ticket price to complete purchase");
 
       idToTicket[ticketId].seller.transfer(msg.value);
@@ -97,23 +98,25 @@ contract ClueconnTickets is ReentrancyGuard {
     }
 
     function fetchMyTickets() public view returns (Ticket[] memory) {
-      uint totalTicketsCount = _ticketIds.current();
-      uint ticketCount = 0;
+      uint totalItemCount = _ticketIds.current();
+      uint itemCount = 0;
       uint currentIndex = 0;
-      for(uint i = 0; i < totalTicketsCount; i++) {
-        if(idToTicket[i +1].owner == msg.sender) {
-          ticketCount +=1; 
+
+      for (uint i = 0; i < totalItemCount; i++) {
+        if (idToTicket[i + 1].owner == msg.sender) {
+          itemCount += 1;
         }
       }
-      Ticket[] memory tickets = new Ticket[](ticketCount);
-      for(uint i = 0; i < totalTicketsCount; i++) {
-        if(idToTicket[i +1].owner == msg.sender) {
-          uint currentId = idToTicket[i +1].ticketId;
-          Ticket storage currentTicket = idToTicket[currentId];
-          tickets[currentIndex] = currentTicket;
+
+      Ticket[] memory items = new Ticket[](itemCount);
+      for (uint i = 0; i < totalItemCount; i++) {
+        if (idToTicket[i + 1].owner == msg.sender) {
+          uint currentId = i + 1;
+          Ticket storage currentItem = idToTicket[currentId];
+          items[currentIndex] = currentItem;
           currentIndex += 1;
         }
       }
-      return tickets;
-    }
-} 
+      return items;
+  }
+}

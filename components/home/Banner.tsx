@@ -1,9 +1,9 @@
 import React from 'react'
-import {Typography} from 'antd'
+import { Typography } from 'antd'
 import styles from '../../styles/Home.module.css'
 import Search from '../search/Search'
 
-const {Title, Text} = Typography
+const { Title, Text } = Typography
 
 function Banner() {
   return (

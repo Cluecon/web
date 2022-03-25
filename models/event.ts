@@ -1,6 +1,7 @@
 export type IEvent = {
   uid: string
   ownerAddress: string
+  ipfsAdress: string
   title: string
   description: string
   location: {

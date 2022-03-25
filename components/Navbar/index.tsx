@@ -1,22 +1,10 @@
 import React from 'react'
 import Link from 'next/link'
-import { Button, Avatar } from 'antd'
-import { PlusCircleOutlined, UserOutlined } from '@ant-design/icons'
+import { Button } from 'antd'
+import { PlusCircleOutlined } from '@ant-design/icons'
 import styles from './Navbar.module.css'
-import { useWalletContext } from '../../context/Wallet'
-import { getWeb3Address } from '../../utils/web3Login'
 
 function Navbar() {
-  const { wallet, updateWallet } = useWalletContext()
-
-  async function login() {
-    if (!wallet?.address) {
-      const address = await getWeb3Address()
-      console.log('address', address, updateWallet)
-      updateWallet && updateWallet(address)
-    }
-  }
-
   return (
     <header className={styles.container}>
       <div className={styles.right}>
@@ -36,17 +24,15 @@ function Navbar() {
             </a>
           </Link>
         </div>
-        {wallet?.address ? (
-          <div>
-            <Avatar size={48} icon={<UserOutlined />} />
-          </div>
-        ) : (
-          <div>
-            <Button onClick={login} type="primary" shape="round" size="large">
-              Connect Wallet
-            </Button>
-          </div>
-        )}
+        <div>
+          <Link href="/account/myTickets">
+            <a>
+              <Button type="primary" shape="round" size="large">
+                My Tickets
+              </Button>
+            </a>
+          </Link>
+        </div>
       </div>
     </header>
   )

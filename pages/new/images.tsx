@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react'
+import React, { useState } from 'react'
 import { Button, Typography, Upload, message } from 'antd'
 import { InboxOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
+import { v4 as uuidv4 } from 'uuid'
 import styles from '../../styles/New.module.css'
 import { useNewEventContext } from '../../context/newEvent'
 import Router, { useRouter } from 'next/router'
@@ -19,6 +20,7 @@ const client = ipfsHttpClient({ url: 'https://ipfs.infura.io:5001/api/v0' })
 function Images() {
   const { push } = useRouter()
   const { event, updateNewEvent } = useNewEventContext()
+  const [loading, setLoading] = useState(false)
 
   async function uploadToIpfs() {
     if (!event?.title) {
@@ -32,13 +34,16 @@ function Images() {
     } else if (!event.classes) {
       push('/new/classes')
     } else {
+      setLoading(true)
       const tagsList = event.tags?.filter((t) => t.isSelected).map((tag) => tag.name)
       const address = await getWeb3Address()
-      const toIpfs = { ...event, tags: tagsList, ownerAddress: address } as IEvent
+      const uid = uuidv4()
+      const toIpfs = { ...event, tags: tagsList, ownerAddress: address, uid: uid } as IEvent
       const added = await client.add(JSON.stringify(toIpfs))
       const jsonUrl = `https://ipfs.infura.io/ipfs/${added.path}`
       const toUpload = { ...toIpfs, ipfsAdress: jsonUrl }
       const firebaseEvent = (await saveEventToFirebase(toUpload)) as IEvent
+      setLoading(false)
       push(`/event/${firebaseEvent.uid}`)
     }
   }
@@ -139,7 +144,14 @@ function Images() {
             </Link>
           </div>
           <div className={styles.next}>
-            <Button className={styles.button} type="primary" shape="round" size="large" onClick={uploadToIpfs}>
+            <Button
+              className={styles.button}
+              type="primary"
+              shape="round"
+              size="large"
+              onClick={uploadToIpfs}
+              loading={loading}
+            >
               Create
             </Button>
           </div>
