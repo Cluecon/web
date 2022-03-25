@@ -24,7 +24,6 @@ function EventDetails() {
   async function getCurrentConversionRate() {
     const responseData = await axios.get('https://us-central1-clueconn-73e93.cloudfunctions.net/api/rates/matic')
     setRate(responseData.data[0].usd)
-    console.log('data', responseData.data)
   }
 
   useEffect(() => {
