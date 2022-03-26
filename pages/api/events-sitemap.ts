@@ -2,6 +2,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { SitemapStream, streamToPromise } from 'sitemap'
 
+// TODO: Not ready
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const smStream = new SitemapStream({
