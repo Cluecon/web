@@ -21,10 +21,10 @@ function EventCard(props: EventCardProps) {
         <a>
           <Card
             hoverable
-            style={{ width: 300, margin: 20 }}
+            style={{ width: 300, margin: 20, height: 380 }}
             cover={<Image alt={props.title} src={props.cover} height="150px" preview={false} />}
           >
-            <Title level={3}>{props.title}</Title>
+            <Title level={3}>{props.title.length > 55 ? `${props.title.substring(0, 50)}...` : props.title}</Title>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <FieldTimeOutlined style={{ fontSize: 24, marginRight: 20, marginLeft: 15 }} />
               <Text>

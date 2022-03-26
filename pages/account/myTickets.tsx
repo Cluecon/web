@@ -8,6 +8,7 @@ import ClueconnTickets from '../../artifacts/contracts/ClueconnTickets.sol/Cluec
 import axios from 'axios'
 import { Spin, Typography } from 'antd'
 import { IEvent } from '../../models/event'
+import Head from 'next/head'
 
 const { Title } = Typography
 
@@ -90,6 +91,17 @@ function UserProfile() {
 
   return (
     <>
+      <Head>
+        <title>My Tickets</title>
+        <meta name="description" content="Clueconn Tickets" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#d818ff" />
+        <meta name="theme-color" content="#d818ff" />
+      </Head>
       <div>{/* <Cover /> */}</div>
       <div>{/* <UserInfo /> */}</div>
       <div>

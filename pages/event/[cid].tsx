@@ -8,6 +8,7 @@ import MobileFooter from '../../components/Event/MobileFooter/MobileFooter'
 import { getFirebaseEventById } from '../../services/firebase'
 import { IEvent } from '../../models/event'
 import axios from 'axios'
+import Head from 'next/head'
 
 function EventDetails() {
   const router = useRouter()
@@ -47,6 +48,17 @@ function EventDetails() {
 
   return (
     <div style={{ position: 'relative' }}>
+      <Head>
+        <title>{event.title}</title>
+        <meta name="description" content={event.description.substring(0, 150)} />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#d818ff" />
+        <meta name="theme-color" content="#d818ff" />
+      </Head>
       <div className={styles.container}>
         <div className={styles.body}>
           <EventBody

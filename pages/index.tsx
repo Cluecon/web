@@ -64,9 +64,19 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Clueconn | NFT Events</title>
-        <meta name="description" content="A new ticketing system for event intelligence" />
+        <title>Clueconn | A new ticketing system for event intelligence</title>
+        <meta
+          name="description"
+          content="Revolutionizing the events industry letting your
+curiousity find you the next big memories"
+        />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#d818ff" />
+        <meta name="theme-color" content="#d818ff" />
       </Head>
       <div style={{ marginTop: 40 }}>
         <Banner />

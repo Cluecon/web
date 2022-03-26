@@ -1,20 +1,36 @@
 import React from 'react'
-import {Input, Button, Space, Typography, InputNumber} from 'antd'
-import {MinusCircleOutlined, PlusOutlined} from '@ant-design/icons'
+import { Input, Button, Space, Typography, InputNumber } from 'antd'
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import styles from '../../styles/New.module.css'
-import {useNewEventContext} from '../../context/newEvent'
+import { useNewEventContext } from '../../context/newEvent'
+import Head from 'next/head'
 
-const {Title} = Typography
+const { Title } = Typography
 
 function Classes() {
-  const {event, updateNewEvent} = useNewEventContext()
+  const { event, updateNewEvent } = useNewEventContext()
   return (
     <>
       <div className={styles.container}>
+        <Head>
+          <title>Clueconn | Add ticket categories</title>
+          <meta
+            name="description"
+            content="Revolutionizing the events industry letting your
+curiousity find you the next big memories"
+          />
+          <link rel="icon" href="/favicon.ico" />
+          <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+          <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+          <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+          <link rel="manifest" href="/site.webmanifest" />
+          <link rel="mask-icon" href="/safari-pinned-tab.svg" color=" #d818ff" />
+          <meta name="theme-color" content="#d818ff" />
+        </Head>
         <>
           <div className={styles.content}>
-            <Title style={{textAlign: 'center'}}>Ticket categories</Title>
+            <Title style={{ textAlign: 'center' }}>Ticket categories</Title>
             <div className={styles.description}>
               {/* <Text>Choose a name that will give get people excited about your event. Feel free to get creative! You can edit this later if you change your mind.</Text> */}
             </div>
@@ -26,7 +42,7 @@ function Classes() {
                       <>
                         <Space
                           key={cl.id}
-                          style={{display: 'flex', marginBottom: 8, justifyContent: 'center', alignItems: 'center'}}
+                          style={{ display: 'flex', marginBottom: 8, justifyContent: 'center', alignItems: 'center' }}
                           align="baseline"
                         >
                           <Input
@@ -39,7 +55,7 @@ function Classes() {
                               if (classesArray) {
                                 const itemIndex = classesArray?.findIndex((obj) => obj.id == cl.id) as number
                                 classesArray[itemIndex].name = e.target.value
-                                updateNewEvent && updateNewEvent({...event, classes: classesArray})
+                                updateNewEvent && updateNewEvent({ ...event, classes: classesArray })
                               }
                             }}
                           />
@@ -54,7 +70,7 @@ function Classes() {
                               if (classesArray) {
                                 const itemIndex = classesArray?.findIndex((obj) => obj.id == cl.id) as number
                                 classesArray[itemIndex].price = e
-                                updateNewEvent && updateNewEvent({...event, classes: classesArray})
+                                updateNewEvent && updateNewEvent({ ...event, classes: classesArray })
                               }
                             }}
                           />
@@ -68,14 +84,14 @@ function Classes() {
                               if (classesArray) {
                                 const itemIndex = classesArray?.findIndex((obj) => obj.id == cl.id) as number
                                 classesArray[itemIndex].amount = e
-                                updateNewEvent && updateNewEvent({...event, classes: classesArray})
+                                updateNewEvent && updateNewEvent({ ...event, classes: classesArray })
                               }
                             }}
                           />
                           <MinusCircleOutlined
                             onClick={() => {
                               const newList = event.classes?.filter((c) => c.id !== cl.id)
-                              updateNewEvent && updateNewEvent({...event, classes: newList})
+                              updateNewEvent && updateNewEvent({ ...event, classes: newList })
                             }}
                           />
                         </Space>
@@ -95,7 +111,7 @@ function Classes() {
                         amount: '',
                       },
                     ]
-                    updateNewEvent && updateNewEvent({...event, classes: updatedList})
+                    updateNewEvent && updateNewEvent({ ...event, classes: updatedList })
                   }}
                   block
                   icon={<PlusOutlined />}
