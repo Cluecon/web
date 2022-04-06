@@ -13,6 +13,7 @@
     "@firebase/firestore": "^3.4.6",
     "@metamask/detect-provider": "^1.2.0",
     "@openzeppelin/contracts": "^4.5.0",
+    "@sentry/nextjs": "^6.19.4",
     "amplitude-js": "^8.18.1",
     "antd": "^4.19.2",
     "axios": "^0.26.1",

@@ -68,3 +68,6 @@ typechain
 cache
 # artifacts
 .secret
+
+# Sentry
+.sentryclirc
