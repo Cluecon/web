@@ -19,6 +19,7 @@
     "chart.js": "^3.7.1",
     "emailjs": "^3.8.0",
     "firebase": "^9.1.2",
+    "geofire-common": "^5.2.0",
     "husky": "^7.0.4",
     "ipfs-http-client": "50.1.2",
     "lodash": "^4.17.20",

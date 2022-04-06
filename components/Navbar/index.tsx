@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { Button } from 'antd'
+import Image from 'next/image'
 import { PlusCircleOutlined } from '@ant-design/icons'
 import styles from './Navbar.module.css'
 
@@ -10,7 +11,7 @@ function Navbar() {
       <div className={styles.right}>
         <Link href="/">
           <a>
-            <h2>Clueconn</h2>
+            <Image src="/assets/logo.png" alt="me" width="55" height="55" />
           </a>
         </Link>
       </div>

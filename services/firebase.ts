@@ -1,4 +1,4 @@
-import { collection, query, getDocs, doc, getDoc, where } from '@firebase/firestore'
+import { collection, query, getDocs, doc, getDoc, where, orderBy, startAt, endAt } from '@firebase/firestore'
 import { setDoc } from 'firebase/firestore' // for adding the Document to Collection
 import { firestore } from '../config/fb'
 import { IEvent, IOTPCode } from '../models/event'
@@ -78,6 +78,29 @@ export const getEventById = async (uid: string) => {
 }
 
 export const getFirebaseEvents = async () => {
+  const eventsQuery = query(eventsCollection)
+  // get the todos
+  const querySnapshot = await getDocs(eventsQuery)
+
+  // map through todos adding them to an array
+  const result: IEvent[] = []
+  querySnapshot.forEach((snapshot) => {
+    result.push(snapshot.data() as IEvent)
+  })
+  return result
+}
+
+export const getEventsByBounds = async (bounds: string[][]) => {
+  const promises: IEvent[] = []
+  for (const b of bounds) {
+    const eventsRef = collection(firestore, 'Events')
+    const q = query(eventsRef, orderBy('geohash'), startAt(b[0]), endAt(b[1]))
+    const eventsSnapshot = await getDocs(q)
+    eventsSnapshot.forEach((doc) => {
+      promises.push(doc.data() as IEvent)
+    })
+    return promises
+  }
   const eventsQuery = query(eventsCollection)
   // get the todos
   const querySnapshot = await getDocs(eventsQuery)

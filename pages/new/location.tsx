@@ -2,6 +2,7 @@ import React from 'react'
 import { Button, Typography, Input } from 'antd'
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete'
 import Link from 'next/link'
+import { geohashForLocation } from 'geofire-common'
 import styles from '../../styles/New.module.css'
 import { useNewEventContext } from '../../context/newEvent'
 import Head from 'next/head'
@@ -41,7 +42,9 @@ curiousity find you the next big memories"
                 geocodeByAddress(add)
                   .then((results) => getLatLng(results[0]))
                   .then(({ lat, lng }) => {
-                    updateNewEvent && updateNewEvent({ ...event, location: { lat: lat, long: lng, address: add } })
+                    const hash = geohashForLocation([lat, lng])
+                    updateNewEvent &&
+                      updateNewEvent({ ...event, location: { lat: lat, long: lng, address: add }, geohash: hash })
                   })
               }}
             >

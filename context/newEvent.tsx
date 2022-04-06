@@ -9,6 +9,7 @@ export type INewEvent = {
   ownerAddress?: string
   title?: string
   description?: string
+  geohash?: string
   location?: {
     lat?: number
     long?: number

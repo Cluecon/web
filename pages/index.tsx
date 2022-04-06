@@ -59,8 +59,6 @@ const Home: NextPage = () => {
     })
   }
 
-  console.log('events', events)
-
   return (
     <div className={styles.container}>
       <Head>

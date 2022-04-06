@@ -5482,6 +5482,11 @@ ganache-core@^2.13.2:
     ethereumjs-wallet "0.6.5"
     web3 "1.2.11"
 
+geofire-common@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/geofire-common/-/geofire-common-5.2.0.tgz#27c78115ef547bdf97ad676d18d24b6f28a19a87"
+  integrity sha512-b3RCXxzdc/ZAoNag/F8n4myWYiBPI1eeQ/gtjLvBKKeILNnYb6Qw0GL/AVfYUKk3Z19Pw+xVBSlYcjqy5OHVzg==
+
 get-caller-file@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-1.0.3.tgz#f978fa4c90d1dfe7ff2d6beda2a515e713bdcf4a"
