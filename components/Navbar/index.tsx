@@ -33,6 +33,15 @@ function Navbar() {
             </a>
           </Link>
         </div>
+        <div style={{ marginLeft: 20 }}>
+          <Link href="/account/myevents">
+            <a>
+              <Button type="primary" shape="round" size="large">
+                My Events
+              </Button>
+            </a>
+          </Link>
+        </div>
       </div>
     </header>
   )

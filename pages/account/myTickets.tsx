@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Web3Modal from 'web3modal'
 import { ethers } from 'ethers'
+import { useRouter } from 'next/router'
 import UserContent from '../../components/account/UserContent'
 import { ticketAddress, clueconnTicketsAddress } from '../../config'
 import Ticket from '../../artifacts/contracts/Ticket.sol/Ticket.json'
@@ -15,48 +16,52 @@ const { Title } = Typography
 function UserProfile() {
   const [tickets, setTickets] = useState<IEvent[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   async function loadTickets() {
-    setIsLoading(true)
-    const web3Modal = new Web3Modal()
-    const connection = await web3Modal.connect()
-    const provider = new ethers.providers.Web3Provider(connection)
-    const signer = provider.getSigner()
+    try {
+      setIsLoading(true)
+      const web3Modal = new Web3Modal()
+      const connection = await web3Modal.connect()
+      const provider = new ethers.providers.Web3Provider(connection)
+      const signer = provider.getSigner()
 
-    const clueconnTicketContract = new ethers.Contract(clueconnTicketsAddress, ClueconnTickets.abi, signer)
-    const tokenContract = new ethers.Contract(ticketAddress, Ticket.abi, provider)
-    const data = await clueconnTicketContract.fetchMyTickets()
-
-    const items = await Promise.all(
-      data.map(
-        async (i: {
-          tokenId: { toNumber: () => any }
-          price: { toString: () => ethers.BigNumberish }
-          seller: any
-          owner: any
-        }) => {
-          const tokenUri = await tokenContract.tokenURI(i.tokenId)
-          console.log('tokenUri', tokenUri)
-          const meta = await axios.get(tokenUri)
-          const price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-          const item = {
-            price,
-            tokenId: i.tokenId.toNumber(),
-            ...meta.data,
+      const clueconnTicketContract = new ethers.Contract(clueconnTicketsAddress, ClueconnTickets.abi, signer)
+      const tokenContract = new ethers.Contract(ticketAddress, Ticket.abi, provider)
+      const data = await clueconnTicketContract.fetchMyTickets()
+      const items = await Promise.all(
+        data.map(
+          async (i: {
+            tokenId: { toNumber: () => any }
+            price: { toString: () => ethers.BigNumberish }
+            creator: any
+            owner: any
+          }) => {
+            const tokenUri = await tokenContract.tokenURI(i.tokenId)
+            const meta = await axios.get(tokenUri)
+            const price = ethers.utils.formatUnits(i.price.toString(), 'ether')
+            const item = {
+              price,
+              tokenId: i.tokenId.toNumber(),
+              creator: i.creator,
+              owner: i.owner,
+              ...meta.data,
+            }
+            return item
           }
-          return item
-        }
+        )
       )
-    )
-    setTickets(items)
-    setIsLoading(false)
+      setTickets(items)
+      setIsLoading(false)
+    } catch (error) {
+      console.log('error', error)
+      router.push('/500')
+    }
   }
 
   useEffect(() => {
     loadTickets()
   }, [])
-
-  console.log('tickets', tickets)
 
   if (isLoading) {
     return (

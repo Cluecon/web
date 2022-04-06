@@ -67,7 +67,9 @@ function MobileFooter(props: DetailsAffixProps) {
         contract = new ethers.Contract(clueconnTicketsAddress, ClueconnTickets.abi, signer)
         let listingPrice = await contract.getTicketListingPrice()
         listingPrice = listingPrice.toString()
-        transaction = await contract.createTicket(ticketAddress, tokenId, price, props.owner, { value: listingPrice })
+        transaction = await contract.createTicket(ticketAddress, tokenId, price, props.creator, props.eventId, {
+          value: listingPrice,
+        })
         await transaction.wait()
 
         // Buy Ticket

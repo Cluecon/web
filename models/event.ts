@@ -1,6 +1,6 @@
 export type IEvent = {
   uid: string
-  ownerAddress: string
+  creatorAddress: string
   ipfsAdress: string
   title: string
   description: string
@@ -21,6 +21,23 @@ export type IEvent = {
     price: string
     amount: string
   }[]
+  isFree: boolean
   ticketArt?: string
   covers?: string
+  tokenId?: string
+  owner?: string
+  price?: string
+}
+
+export type IOTPCode = {
+  code: string
+  createdAt: {
+    seconds: number
+    nanoseconds: number
+  }
+  eventId: string
+  secret: string
+  tokenId: string
+  uid: string
+  verified: boolean
 }

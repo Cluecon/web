@@ -36,7 +36,8 @@ curiousity find you the next big memories"
             </div>
             <div className={styles.inputWrapper}>
               <>
-                {event?.classes &&
+                {!event?.isFree &&
+                  event?.classes &&
                   event?.classes.map((cl) => {
                     return (
                       <>
@@ -98,26 +99,42 @@ curiousity find you the next big memories"
                       </>
                     )
                   })}
-                <Button
-                  type="dashed"
-                  onClick={() => {
-                    const currentList = event?.classes || []
-                    const updatedList = [
-                      ...currentList,
-                      {
-                        id: currentList.length == 0 ? 1 : currentList.length + 1,
-                        name: '',
-                        price: '',
-                        amount: '',
-                      },
-                    ]
-                    updateNewEvent && updateNewEvent({ ...event, classes: updatedList })
-                  }}
-                  block
-                  icon={<PlusOutlined />}
-                >
-                  Add Category
-                </Button>
+                {!event?.isFree && (
+                  <Button
+                    type="dashed"
+                    onClick={() => {
+                      const currentList = event?.classes || []
+                      const updatedList = [
+                        ...currentList,
+                        {
+                          id: currentList.length == 0 ? 1 : currentList.length + 1,
+                          name: '',
+                          price: '',
+                          amount: '',
+                        },
+                      ]
+                      updateNewEvent && updateNewEvent({ ...event, classes: updatedList })
+                    }}
+                    block
+                    icon={<PlusOutlined />}
+                  >
+                    Add Category
+                  </Button>
+                )}
+                <div>
+                  <Button
+                    block
+                    style={{ marginRight: 10, marginTop: 10 }}
+                    type={event?.isFree ? 'primary' : 'dashed'}
+                    shape="round"
+                    size="large"
+                    onClick={() => {
+                      updateNewEvent && updateNewEvent({ ...event, isFree: !event?.isFree })
+                    }}
+                  >
+                    Free
+                  </Button>
+                </div>
               </>
             </div>
           </div>

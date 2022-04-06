@@ -1,12 +1,8 @@
-import { createContext, Dispatch, SetStateAction, useContext, useState } from 'react'
-
-export type IWallet = {
-  address: string
-}
+import React, { createContext, Dispatch, SetStateAction, useContext, useState } from 'react'
 
 export type IWalletContext = {
-  wallet?: IWallet
-  updateWallet?: Dispatch<SetStateAction<any>>
+  address?: string
+  updateAddress?: Dispatch<SetStateAction<any>>
 }
 
 const WalletContext = createContext<IWalletContext>({})
@@ -16,9 +12,15 @@ export interface WalletWrapperProps {
 }
 
 export const WalletWrapper = ({ children }: WalletWrapperProps) => {
-  const [wallet, setWallet] = useState<IWallet>()
-  console.log('wallet', wallet)
-  return <WalletContext.Provider value={{ wallet: wallet, updateWallet: setWallet }}>{children}</WalletContext.Provider>
+  const [userAddress, setUserAddress] = useState('')
+
+  return (
+    <>
+      <WalletContext.Provider value={{ address: userAddress, updateAddress: setUserAddress }}>
+        {children}
+      </WalletContext.Provider>
+    </>
+  )
 }
 
 export function useWalletContext() {

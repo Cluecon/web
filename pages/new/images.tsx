@@ -32,14 +32,14 @@ function Images() {
       push('/new/location')
     } else if (!event.date) {
       Router.push('/new/date')
-    } else if (!event.classes) {
+    } else if (!event.classes && !event.isFree) {
       push('/new/classes')
     } else {
       setLoading(true)
       const tagsList = event.tags?.filter((t) => t.isSelected).map((tag) => tag.name)
       const address = await getWeb3Address()
       const uid = uuidv4()
-      const toIpfs = { ...event, tags: tagsList, ownerAddress: address, uid: uid } as IEvent
+      const toIpfs = { ...event, tags: tagsList, creatorAddress: address, uid: uid } as IEvent
       const added = await client.add(JSON.stringify(toIpfs))
       const jsonUrl = `https://ipfs.infura.io/ipfs/${added.path}`
       const toUpload = { ...toIpfs, ipfsAdress: jsonUrl }

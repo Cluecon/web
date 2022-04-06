@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Card, Affix, Typography, Button } from 'antd'
+import { Card, Affix, Typography, Button, Spin } from 'antd'
 import Select from 'react-select'
 import Web3Modal from 'web3modal'
 import { ethers } from 'ethers'
@@ -9,6 +9,7 @@ import ClueconnTickets from '../../../artifacts/contracts/ClueconnTickets.sol/Cl
 import Ticket from '../../../artifacts/contracts/Ticket.sol/Ticket.json'
 import { clueconnTicketsAddress, ticketAddress } from '../../../config'
 import { parseInt } from 'lodash'
+import axios from 'axios'
 
 const { Title } = Typography
 
@@ -21,23 +22,39 @@ export type IClass = {
 
 export type DetailsAffixProps = {
   classes?: IClass[]
+  isFree: boolean
   ipfsUrl: string
-  owner: string
+  creator: string
   rate: string
+  eventId: string
 }
 
 function DetailsAffix(props: DetailsAffixProps) {
-  const options = props.classes?.map((cl) => {
-    return {
-      value: cl.name,
-      label: cl.name,
+  function getOptions() {
+    let options: { value: string; label: string }[] | undefined = []
+    if (props.isFree) {
+      options = [
+        {
+          value: 'Free',
+          label: 'Free',
+        },
+      ]
+    } else {
+      options = props.classes?.map((cl) => {
+        return {
+          value: cl.name,
+          label: cl.name,
+        }
+      })
     }
-  })
+    return options
+  }
   const [selectedOption, setSelectedOption] = useState<{ label: string; value: string } | null>(null)
   const [ticketPrice, setTicketPrice] = useState<string | undefined>()
+  const [isTransctionLoading, setIsTransactionLoading] = useState(false)
 
   function renderPrice() {
-    if (!props.classes || !selectedOption) {
+    if (props.isFree) {
       return 'Free'
     }
     if (!ticketPrice) {
@@ -52,14 +69,15 @@ function DetailsAffix(props: DetailsAffixProps) {
           <div style={{ margin: '0px 10px 0px 10px' }}>
             <Image src="/assets/polygon.png" alt="me" width="20" height="20" />
           </div>
-          {pMatic} MATIC
+          {parseFloat(pMatic) > 0 ? pMatic : 0} MATIC
         </div>
       )
     }
   }
 
   async function buyTicket() {
-    if (!ticketPrice) {
+    setIsTransactionLoading(true)
+    if (!ticketPrice && !props.isFree) {
       alert('Please select ticket option')
     } else {
       try {
@@ -75,13 +93,19 @@ function DetailsAffix(props: DetailsAffixProps) {
         const event = tx.events[0]
         const value = event.args[2]
         const tokenId = value.toNumber()
-        const mFloat = parseInt(ticketPrice) / parseFloat(props.rate)
-        const toSavePrice = ticketPrice === 'Free' ? 0 : mFloat
+        const mFloat = parseInt(ticketPrice as string) / parseFloat(props.rate)
+        const toSavePrice = ticketPrice === 'Free' || props.isFree ? 0 : mFloat
         const price = ethers.utils.parseUnits(toSavePrice.toString(), 'ether')
         contract = new ethers.Contract(clueconnTicketsAddress, ClueconnTickets.abi, signer)
         let listingPrice = await contract.getTicketListingPrice()
         listingPrice = listingPrice.toString()
-        transaction = await contract.createTicket(ticketAddress, tokenId, price, props.owner, { value: listingPrice })
+        transaction = await contract.createTicket(ticketAddress, tokenId, price, props.creator, props.eventId, {
+          value: listingPrice,
+        })
+        await axios.post('https://us-central1-clueconn-73e93.cloudfunctions.net/api/generateticketcode', {
+          eventId: props.eventId,
+          tokenId: tokenId,
+        })
         await transaction.wait()
 
         // Buy Ticket
@@ -92,10 +116,26 @@ function DetailsAffix(props: DetailsAffixProps) {
           value: buyPrice,
         })
         await transaction.wait()
+        setIsTransactionLoading(false)
       } catch (error) {
+        setIsTransactionLoading(false)
         console.log('error', error)
       }
     }
+  }
+
+  if (isTransctionLoading) {
+    return (
+      <div
+      // style={{
+      //   position: 'fixed',
+      //   top: '50%',
+      //   left: '50%',
+      // }}
+      >
+        <Spin size="large" />
+      </div>
+    )
   }
 
   return (
@@ -120,7 +160,7 @@ function DetailsAffix(props: DetailsAffixProps) {
                   setTicketPrice(price)
                 }
               }}
-              options={options}
+              options={getOptions()}
               theme={(theme) => ({
                 ...theme,
                 borderRadius: 0,

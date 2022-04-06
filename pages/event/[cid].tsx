@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Spin } from 'antd'
+import { Button, Spin } from 'antd'
 import { useRouter } from 'next/router'
 import styles from '../../styles/Details.module.css'
 import DetailsAffix from '../../components/Event/Affix/DetailsAffix'
@@ -9,26 +9,30 @@ import { getFirebaseEventById } from '../../services/firebase'
 import { IEvent } from '../../models/event'
 import axios from 'axios'
 import Head from 'next/head'
+import { getWeb3Address } from '../../utils/web3Login'
+import Link from 'next/link'
 
 function EventDetails() {
   const router = useRouter()
   const [event, setEvent] = useState<IEvent>()
   const [rate, setRate] = useState<string>()
+  const [userAddress, setUserAddress] = useState<string | undefined>()
+  const [isLoading, setIsLoading] = useState(false)
   const { cid } = router.query
 
   const getEventDetails = useCallback(async () => {
+    setIsLoading(true)
+    const address = await getWeb3Address()
+    setUserAddress(address)
+    const responseData = await axios.get('https://us-central1-clueconn-73e93.cloudfunctions.net/api/rates/matic')
+    setRate(responseData.data[0].usd)
     const eventUid = cid as string
     const fbEvent = await getFirebaseEventById(eventUid)
     setEvent(fbEvent)
+    setIsLoading(false)
   }, [cid])
 
-  async function getCurrentConversionRate() {
-    const responseData = await axios.get('https://us-central1-clueconn-73e93.cloudfunctions.net/api/rates/matic')
-    setRate(responseData.data[0].usd)
-  }
-
   useEffect(() => {
-    getCurrentConversionRate()
     getEventDetails()
   }, [getEventDetails])
 
@@ -44,6 +48,10 @@ function EventDetails() {
         <Spin size="large" />
       </div>
     )
+  }
+
+  if (!isLoading && !event) {
+    router.push('/404')
   }
 
   return (
@@ -72,28 +80,38 @@ function EventDetails() {
           />
         </div>
         <div className={styles.sticker}>
-          <DetailsAffix
-            classes={event.classes}
-            ipfsUrl={event.ipfsAdress}
-            owner={event.ownerAddress}
-            rate={rate as string}
-          />
+          {userAddress === event.creatorAddress ? (
+            <>
+              <Link href={`/account/myevents/${event.creatorAddress}/${event.uid}`}>
+                <a>
+                  <Button type="primary" shape="round" size="large">
+                    Dashboard
+                  </Button>
+                </a>
+              </Link>
+            </>
+          ) : (
+            <>
+              <DetailsAffix
+                isFree={event.isFree}
+                classes={event.classes}
+                ipfsUrl={event.ipfsAdress}
+                creator={event.creatorAddress}
+                rate={rate as string}
+                eventId={cid as string}
+              />
+            </>
+          )}
         </div>
       </div>
-      {/* <div style={{ marginTop: 30 }}>
-        <Title style={{ textAlign: 'center' }} level={1}>
-          Related
-        </Title>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
-          {renderRelated()}
-        </div>
-      </div> */}
       <div className={styles.footer}>
         <MobileFooter
+          isFree={event.isFree}
           classes={event.classes}
           ipfsUrl={event.ipfsAdress}
-          owner={event.ownerAddress}
+          creator={event.creatorAddress}
           rate={rate as string}
+          eventId={cid as string}
         />
       </div>
     </div>

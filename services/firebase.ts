@@ -1,7 +1,7 @@
-import { collection, query, getDocs, doc, getDoc } from '@firebase/firestore'
+import { collection, query, getDocs, doc, getDoc, where } from '@firebase/firestore'
 import { setDoc } from 'firebase/firestore' // for adding the Document to Collection
 import { firestore } from '../config/fb'
-import { IEvent } from '../models/event'
+import { IEvent, IOTPCode } from '../models/event'
 
 const eventsCollection = collection(firestore, 'Events')
 
@@ -30,6 +30,50 @@ export const getFirebaseEventById = async (uid: string) => {
   } catch (error: any) {
     console.log('error', error)
     // throw new Error(error)
+  }
+}
+
+export const getFirebaseEventsByAdress = async (address: string) => {
+  try {
+    const events: IEvent[] = []
+    const eventsRef = collection(firestore, 'Events')
+    const q = query(eventsRef, where('creatorAddress', '==', address))
+    const eventsSnapshot = await getDocs(q)
+    eventsSnapshot.forEach((doc) => {
+      events.push(doc.data() as IEvent)
+    })
+    return events
+  } catch (error) {
+    console.log('error', error)
+  }
+}
+
+export const getCodesByEventId = async (eventId: string) => {
+  try {
+    const events: IOTPCode[] = []
+    const eventsRef = collection(firestore, 'TicketsOTP')
+    const q = query(eventsRef, where('eventId', '==', eventId))
+    const eventsSnapshot = await getDocs(q)
+    eventsSnapshot.forEach((doc) => {
+      events.push(doc.data() as IOTPCode)
+    })
+    return events
+  } catch (error) {
+    console.log('error', error)
+  }
+}
+
+export const getEventById = async (uid: string) => {
+  try {
+    const docRef = doc(firestore, 'Events', uid)
+    const docSnap = await getDoc(docRef)
+    if (docSnap.exists()) {
+      return docSnap.data()
+    } else {
+      throw new Error('not found')
+    }
+  } catch (error) {
+    console.log(error)
   }
 }
 

@@ -15,7 +15,7 @@ contract ClueconnTickets is ReentrancyGuard {
 
     address payable owner;
     // price to be payed to the original event creator on ticket resale
-    uint256 ticketListingPrice = 0.010 ether;
+    uint256 ticketListingPrice = 0.000 ether;
 
     constructor() {
       owner = payable(msg.sender);
@@ -25,10 +25,12 @@ contract ClueconnTickets is ReentrancyGuard {
       uint ticketId;
       address ticketContract;
       uint256 tokenId;
-      address payable seller;
+      address payable creator;
       address payable owner;
       uint256 price;
+      string eventId;
       bool sold;
+      bool scanned;
     }
 
     mapping(uint256 => Ticket) private idToTicket;
@@ -37,10 +39,12 @@ contract ClueconnTickets is ReentrancyGuard {
       uint indexed ticketId,
       address indexed ticketContract,
       uint256 indexed tokenId,
-      address seller,
+      address creator,
       address owner,
       uint256 price,
-      bool sold
+      string eventId,
+      bool sold,
+      bool scanned
     );
 
     function getTicketListingPrice() public view returns (uint256) {
@@ -51,7 +55,8 @@ contract ClueconnTickets is ReentrancyGuard {
       address ticketContract,
       uint256 tokenId,
       uint256 price,
-      address organizer
+      address creator,
+      string memory eventId
     ) public payable nonReentrant {
       require(msg.value == ticketListingPrice, "Price must be equal to ticket listing price");
 
@@ -62,9 +67,11 @@ contract ClueconnTickets is ReentrancyGuard {
         ticketId,
         ticketContract,
         tokenId,
-        payable(address(organizer)),
+        payable(address(creator)),
         payable(address(0)),
         price,
+        eventId,
+        false,
         false
       );
 
@@ -77,6 +84,8 @@ contract ClueconnTickets is ReentrancyGuard {
         msg.sender,
         address(0),
         price,
+        eventId,
+        false,
         false
       );
     }
@@ -89,12 +98,18 @@ contract ClueconnTickets is ReentrancyGuard {
       uint tokenId = idToTicket[ticketId].tokenId;
       require(msg.value == price, "Please submit the ticket price to complete purchase");
 
-      idToTicket[ticketId].seller.transfer(msg.value);
+      idToTicket[ticketId].creator.transfer(msg.value);
       IERC721(ticketContract).transferFrom(address(this), msg.sender, tokenId);
       idToTicket[ticketId].owner = payable(msg.sender);
       idToTicket[ticketId].sold = true;
       _ticketsSold.increment();
       payable(owner).transfer(ticketListingPrice);
+    }
+
+    function scanTicket(
+      uint256 ticketId
+    ) public payable nonReentrant {
+      idToTicket[ticketId].scanned = true;
     }
 
     function fetchMyTickets() public view returns (Ticket[] memory) {
@@ -111,6 +126,29 @@ contract ClueconnTickets is ReentrancyGuard {
       Ticket[] memory items = new Ticket[](itemCount);
       for (uint i = 0; i < totalItemCount; i++) {
         if (idToTicket[i + 1].owner == msg.sender) {
+          uint currentId = i + 1;
+          Ticket storage currentItem = idToTicket[currentId];
+          items[currentIndex] = currentItem;
+          currentIndex += 1;
+        }
+      }
+      return items;
+  }
+
+  function fetchEventTickets(string memory eventId) public view returns (Ticket[] memory) {
+      uint totalItemCount = _ticketIds.current();
+      uint itemCount = 0;
+      uint currentIndex = 0;
+
+
+      for (uint i = 0; i < totalItemCount; i++) {
+        if (keccak256(abi.encodePacked(idToTicket[i + 1].eventId)) == keccak256(abi.encodePacked(eventId))) {
+          itemCount += 1;
+        }
+      }
+      Ticket[] memory items = new Ticket[](itemCount);
+      for (uint i = 0; i < totalItemCount; i++) {
+        if (keccak256(abi.encodePacked(idToTicket[i + 1].eventId)) == keccak256(abi.encodePacked(eventId))) {
           uint currentId = i + 1;
           Ticket storage currentItem = idToTicket[currentId];
           items[currentIndex] = currentItem;
