@@ -1,2 +1,2 @@
-export const clueconnTicketsAddress = '0xaB2C6cB025B435B3A3ABcEf373e1075481348057'
-export const ticketAddress = '0xf4318D7628114131B4F13b98dbEa976BB0777096'
+export const clueconnTicketsAddress = '0x0d10B2E95D0A86f7e30874743b6D8bFb6E9fB50c'
+export const ticketAddress = '0x9c7BC55a8FB278E4F0aa34f4693AA6a77594b49F'

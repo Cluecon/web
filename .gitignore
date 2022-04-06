@@ -30,6 +30,7 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.secret
 
 # vercel
 .vercel
@@ -66,3 +67,4 @@ typechain
 #Hardhat files
 cache
 artifacts
+.secret
