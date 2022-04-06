@@ -46,7 +46,7 @@ typechain
 
 #Hardhat files
 cache
-artifacts
+# artifacts
 
 node_modules
 .env
@@ -56,7 +56,7 @@ typechain
 
 #Hardhat files
 cache
-artifacts
+# artifacts
 
 node_modules
 .env
@@ -66,5 +66,5 @@ typechain
 
 #Hardhat files
 cache
-artifacts
+# artifacts
 .secret
