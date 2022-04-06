@@ -64,7 +64,7 @@ function Images() {
   const imagesProps = {
     name: 'file',
     multiple: true,
-    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+    action: '/api/antupload',
     onChange(info: any) {
       const { status } = info.file
       if (status !== 'uploading') {
@@ -139,7 +139,7 @@ curiousity find you the next big memories"
                     shape="round"
                     size="large"
                     onClick={() => {
-                      updateNewEvent && updateNewEvent({ ...event, ticketArt: undefined })
+                      updateNewEvent && updateNewEvent({ ...event, covers: undefined })
                     }}
                   >
                     Replace

@@ -31,7 +31,7 @@ function Art() {
   const ticketProps = {
     name: 'file',
     multiple: false,
-    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+    action: '/api/antupload',
     onChange(info: any) {
       const { status } = info.file
       if (status !== 'uploading') {
