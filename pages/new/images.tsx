@@ -64,7 +64,7 @@ function Images() {
   const imagesProps = {
     name: 'file',
     multiple: true,
-    action: '',
+    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
     onChange(info: any) {
       const { status } = info.file
       if (status !== 'uploading') {
