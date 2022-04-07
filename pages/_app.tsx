@@ -24,19 +24,15 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <>
-      <Script src="https://www.googletagmanager.com/gtag/js?id=G-81H3YERH00" strategy="afterInteractive" />
+      <Script src="https://www.googletagmanager.com/gtag/js?id=G-QXRE37E5JP" strategy="afterInteractive" />
       <Script id="google-analytics" strategy="afterInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){window.dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', 'G-2P5R9PQNJN');
+          gtag('config', 'G-QXRE37E5JP');
         `}
       </Script>
-      <Script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAGvZcCyI8iQgz9NwFgPJ0bKQAiwwrO13s&libraries=places"
-        strategy="beforeInteractive"
-      />
       <WalletWrapper>
         <Navbar />
         <NextNProgress color="#d818ff" startPosition={0.3} stopDelayMs={200} height={3} showOnShallow={true} />
