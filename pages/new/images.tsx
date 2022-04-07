@@ -28,8 +28,6 @@ function Images() {
       push('/new/title')
     } else if (!event.description) {
       push('/new/description')
-    } else if (!event.location) {
-      push('/new/location')
     } else if (!event.date) {
       Router.push('/new/date')
     } else if (!event.classes && !event.isFree) {
