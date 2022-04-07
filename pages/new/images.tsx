@@ -33,17 +33,29 @@ function Images() {
     } else if (!event.classes && !event.isFree) {
       push('/new/classes')
     } else {
-      setLoading(true)
-      const tagsList = event.tags?.filter((t) => t.isSelected).map((tag) => tag.name)
-      const address = await getWeb3Address()
-      const uid = uuidv4()
-      const toIpfs = { ...event, tags: tagsList, creatorAddress: address, uid: uid } as IEvent
-      const added = await client.add(JSON.stringify(toIpfs))
-      const jsonUrl = `https://ipfs.infura.io/ipfs/${added.path}`
-      const toUpload = { ...toIpfs, ipfsAdress: jsonUrl }
-      const firebaseEvent = (await saveEventToFirebase(toUpload)) as IEvent
-      setLoading(false)
-      push(`/event/${firebaseEvent.uid}`)
+      try {
+        setLoading(true)
+        const tagsList = event.tags?.filter((t) => t.isSelected).map((tag) => tag.name)
+        const address = await getWeb3Address()
+        const uid = uuidv4()
+        const toIpfs = {
+          ...event,
+          tags: tagsList,
+          creatorAddress: address,
+          uid: uid,
+          location: event.location ? event.location : null,
+        } as IEvent
+        const added = await client.add(JSON.stringify(toIpfs))
+        const jsonUrl = `https://ipfs.infura.io/ipfs/${added.path}`
+        const toUpload = { ...toIpfs, ipfsAdress: jsonUrl }
+        const firebaseEvent = (await saveEventToFirebase(toUpload)) as IEvent
+        setLoading(false)
+        push(`/event/${firebaseEvent.uid}`)
+      } catch (error) {
+        console.error(error)
+        setLoading(false)
+        message.error('Internal server error! Please try again')
+      }
     }
   }
 
