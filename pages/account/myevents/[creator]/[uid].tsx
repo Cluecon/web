@@ -9,6 +9,7 @@ import { clueconnTicketsAddress } from '../../../../config'
 import ClueconnTickets from '../../../../artifacts/contracts/ClueconnTickets.sol/ClueconnTickets.json'
 import axios from 'axios'
 import { getCodesByEventId } from '../../../../services/firebase'
+import { functionsAPi } from '../../../../utils/functionsapi'
 
 function MyEventDetail() {
   const router = useRouter()
@@ -57,7 +58,7 @@ function MyEventDetail() {
             onOk={async () => {
               if (code.length) {
                 try {
-                  await axios.post('https://us-central1-clueconn-73e93.cloudfunctions.net/api/verifyticketcode', {
+                  await axios.post(`${functionsAPi}/verifyticketcode`, {
                     eventId: uid,
                     tokenId: tokenId,
                     code: code,

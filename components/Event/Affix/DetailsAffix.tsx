@@ -10,6 +10,7 @@ import Ticket from '../../../artifacts/contracts/Ticket.sol/Ticket.json'
 import { clueconnTicketsAddress, ticketAddress } from '../../../config'
 import { parseInt } from 'lodash'
 import axios from 'axios'
+import { functionsAPi } from '../../../utils/functionsapi'
 
 const { Title } = Typography
 
@@ -102,7 +103,9 @@ function DetailsAffix(props: DetailsAffixProps) {
         transaction = await contract.createTicket(ticketAddress, tokenId, price, props.creator, props.eventId, {
           value: listingPrice,
         })
-        await axios.post('https://us-central1-clueconn-73e93.cloudfunctions.net/api/generateticketcode', {
+        const address = await signer.getAddress()
+        await axios.post(`${functionsAPi}/generateticketcode`, {
+          ownerAddress: address,
           eventId: props.eventId,
           tokenId: tokenId,
         })

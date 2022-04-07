@@ -33,6 +33,10 @@ function MyApp({ Component, pageProps }: AppProps) {
           gtag('config', 'G-QXRE37E5JP');
         `}
       </Script>
+      <Script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAGvZcCyI8iQgz9NwFgPJ0bKQAiwwrO13s&libraries=places"
+        strategy="beforeInteractive"
+      />
       <WalletWrapper>
         <Navbar />
         <NextNProgress color="#d818ff" startPosition={0.3} stopDelayMs={200} height={3} showOnShallow={true} />

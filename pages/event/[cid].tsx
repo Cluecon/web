@@ -11,6 +11,7 @@ import axios from 'axios'
 import Head from 'next/head'
 import { getWeb3Address } from '../../utils/web3Login'
 import Link from 'next/link'
+import { functionsAPi } from '../../utils/functionsapi'
 
 function EventDetails() {
   const router = useRouter()
@@ -24,7 +25,7 @@ function EventDetails() {
     setIsLoading(true)
     const address = await getWeb3Address()
     setUserAddress(address)
-    const responseData = await axios.get('https://us-central1-clueconn-73e93.cloudfunctions.net/api/rates/matic')
+    const responseData = await axios.get(`${functionsAPi}/rates/matic`)
     setRate(responseData.data[0].usd)
     const eventUid = cid as string
     const fbEvent = await getFirebaseEventById(eventUid)

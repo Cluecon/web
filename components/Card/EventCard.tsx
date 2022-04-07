@@ -9,6 +9,7 @@ import {
   EyeTwoTone,
 } from '@ant-design/icons'
 import axios from 'axios'
+import { functionsAPi } from '../../utils/functionsapi'
 // import { QRCodeSVG } from 'qrcode.react';
 
 const { Title, Text } = Typography
@@ -35,9 +36,7 @@ function EventCard(props: EventCardProps) {
   async function fetchTicketPasscode() {
     if (props.isTicket) {
       try {
-        const responseData = await axios.get(
-          `https://us-central1-clueconn-73e93.cloudfunctions.net/api/code/${props.cid}/${props.tokenId}`
-        )
+        const responseData = await axios.get(`${functionsAPi}/code/${props.cid}/${props.tokenId}`)
         if (responseData.status == 200) {
           setTicketPasscode(responseData.data.code)
         }
