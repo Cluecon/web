@@ -21,6 +21,7 @@ export type INewEvent = {
     endDate: string | null
   }
   isFree?: boolean
+  isOnline?: boolean
   classes?: {
     id: number
     name: string
@@ -55,6 +56,7 @@ export const NewEventWrapper = ({ children }: NewEventWrapperProps) => {
     ticketArt:
       'https://3vqfjspkq1qw.usemoralis.com:2053/server/files/eieJDT85ex6swEjngZuhlVqHI7uvUrgQYdWFKdew/QmYZauEK8xWmcgmpXWWhC13VSdKDeCR9TTqpDRTM4Y3kx5.png',
     isFree: false,
+    isOnline: false,
   })
 
   return (

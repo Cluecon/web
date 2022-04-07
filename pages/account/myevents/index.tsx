@@ -67,7 +67,8 @@ function MyEvents() {
             cover={e.covers || no_image}
             strartDate={moment(e.date.startDate).format('llll')}
             endDate={moment(e.date.endDate).format('llll')}
-            location={e.location.address}
+            isOnline={e.isOnline ? e.isOnline : false}
+            location={e?.location?.address}
             creator={e.creatorAddress}
             price={e.price || 'Free'}
           />

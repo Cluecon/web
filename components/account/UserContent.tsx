@@ -22,7 +22,8 @@ function UserContent(props: IUserContentProps) {
             cover={e.ticketArt || no_image}
             strartDate={moment(e.date.startDate).format('llll')}
             endDate={moment(e.date.endDate).format('llll')}
-            location={e.location.address}
+            location={e?.location?.address}
+            isOnline={e.isOnline ? e.isOnline : false}
             isTicket={true}
             tokenId={e.tokenId}
             owner={e.owner}

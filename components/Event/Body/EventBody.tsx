@@ -8,7 +8,8 @@ const { Title, Text } = Typography
 type EventBodyProps = {
   title: string
   description: string
-  address: string
+  address?: string
+  isOnline: boolean
   startDate: string
   endDate: string
   tags: string[] | undefined
@@ -41,7 +42,7 @@ function EventBody(props: EventBodyProps) {
       </div>
       <div>
         <EnvironmentOutlined style={{ fontSize: '24px', marginRight: 10, marginLeft: 15 }} />
-        <Text>{props.address}</Text>
+        <Text>{props.address ? props.address : 'Online'}</Text>
         <Divider dashed orientation="left">
           Date
         </Divider>

@@ -4,7 +4,7 @@ export type IEvent = {
   ipfsAdress: string
   title: string
   description: string
-  location: {
+  location?: {
     lat: number
     long: number
     address: string
@@ -22,6 +22,7 @@ export type IEvent = {
     amount: string
   }[]
   isFree: boolean
+  isOnline: boolean
   ticketArt?: string
   covers?: string
   tokenId?: string

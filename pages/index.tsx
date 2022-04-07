@@ -53,7 +53,8 @@ const Home: NextPage = () => {
           cover={ev.covers || cover}
           strartDate={moment(ev.date.startDate).format('llll')}
           endDate={moment(ev.date.endDate).format('llll')}
-          location={ev.location.address}
+          location={ev?.location?.address}
+          isOnline={ev.isOnline ? ev.isOnline : false}
         />
       )
     })

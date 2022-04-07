@@ -75,7 +75,8 @@ function SearchResults() {
             cover={e.covers || no_image}
             strartDate={moment(e.date.startDate).format('llll')}
             endDate={moment(e.date.endDate).format('llll')}
-            location={e.location.address}
+            location={e?.location?.address}
+            isOnline={e.isOnline ? e.isOnline : false}
             tokenId={e.tokenId}
             owner={e.owner}
             creator={e.creatorAddress}

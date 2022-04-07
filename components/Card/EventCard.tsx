@@ -19,7 +19,8 @@ type EventCardProps = {
   cover: string
   strartDate: string
   endDate: string
-  location: string
+  location?: string
+  isOnline: boolean
   isTicket?: boolean
   tokenId?: string
   owner?: string
@@ -95,7 +96,7 @@ function EventCard(props: EventCardProps) {
             </div>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <EnvironmentOutlined style={{ fontSize: '24px', marginRight: 10, marginLeft: 15 }} />
-              <Text>{props.location}</Text>
+              <Text>{props.location ? props.location : 'Online'}</Text>
             </div>
           </a>
         </Link>

@@ -33,54 +33,75 @@ curiousity find you the next big memories"
           <Title style={{ textAlign: 'center' }}>Where is your event located?</Title>
           <div className={styles.description}>{/* <Text>Feel free to be as descriptive as you wish</Text> */}</div>
           <div className={styles.inputWrapper}>
-            <PlacesAutocomplete
-              value={event?.location?.address}
-              onChange={(add) =>
-                updateNewEvent && updateNewEvent({ ...event, location: { ...event?.location, address: add } })
-              }
-              onSelect={(add) => {
-                geocodeByAddress(add)
-                  .then((results) => getLatLng(results[0]))
-                  .then(({ lat, lng }) => {
-                    const hash = geohashForLocation([lat, lng])
-                    updateNewEvent &&
-                      updateNewEvent({ ...event, location: { lat: lat, long: lng, address: add }, geohash: hash })
-                  })
-              }}
-            >
-              {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-                <div>
-                  <Input
-                    size="large"
-                    className={styles.input}
-                    {...getInputProps({
-                      placeholder: 'Search Places ...',
-                    })}
-                  />
-                  <div className="autocomplete-dropdown-container">
-                    {loading && <div>Loading...</div>}
-                    {suggestions.map((suggestion) => {
-                      const className = suggestion.active ? 'suggestion-item--active' : 'suggestion-item'
-                      // inline style for demonstration purpose
-                      const style = suggestion.active
-                        ? { backgroundColor: '#fafafa', cursor: 'pointer' }
-                        : { backgroundColor: '#ffffff', cursor: 'pointer' }
-                      return (
-                        // eslint-disable-next-line react/jsx-key
-                        <div
-                          {...getSuggestionItemProps(suggestion, {
-                            className,
-                            style,
-                          })}
-                        >
-                          <span>{suggestion.description}</span>
-                        </div>
-                      )
-                    })}
+            {!event?.isOnline && (
+              <PlacesAutocomplete
+                value={event?.location?.address}
+                onChange={(add) =>
+                  updateNewEvent && updateNewEvent({ ...event, location: { ...event?.location, address: add } })
+                }
+                onSelect={(add) => {
+                  geocodeByAddress(add)
+                    .then((results) => getLatLng(results[0]))
+                    .then(({ lat, lng }) => {
+                      const hash = geohashForLocation([lat, lng])
+                      updateNewEvent &&
+                        updateNewEvent({ ...event, location: { lat: lat, long: lng, address: add }, geohash: hash })
+                    })
+                }}
+              >
+                {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                  <div>
+                    <Input
+                      size="large"
+                      className={styles.input}
+                      {...getInputProps({
+                        placeholder: 'Search Places ...',
+                      })}
+                    />
+                    <div className="autocomplete-dropdown-container">
+                      {loading && <div>Loading...</div>}
+                      {suggestions.map((suggestion) => {
+                        const className = suggestion.active ? 'suggestion-item--active' : 'suggestion-item'
+                        // inline style for demonstration purpose
+                        const style = suggestion.active
+                          ? { backgroundColor: '#fafafa', cursor: 'pointer' }
+                          : { backgroundColor: '#ffffff', cursor: 'pointer' }
+                        return (
+                          // eslint-disable-next-line react/jsx-key
+                          <div
+                            {...getSuggestionItemProps(suggestion, {
+                              className,
+                              style,
+                            })}
+                          >
+                            <span>{suggestion.description}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
-            </PlacesAutocomplete>
+                )}
+              </PlacesAutocomplete>
+            )}
+            <div style={{ marginTop: 40 }}>
+              <Button
+                block
+                style={{ marginRight: 10, marginTop: 10 }}
+                type={event?.isOnline ? 'primary' : 'dashed'}
+                shape="round"
+                size="large"
+                onClick={() => {
+                  updateNewEvent &&
+                    updateNewEvent({
+                      ...event,
+                      isOnline: !event?.isOnline,
+                      location: event?.isOnline ? undefined : event?.location,
+                    })
+                }}
+              >
+                Online
+              </Button>
+            </div>
           </div>
         </div>
         <div className={styles.footer}>

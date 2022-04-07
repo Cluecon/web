@@ -72,11 +72,12 @@ function EventDetails() {
           <EventBody
             title={event.title}
             description={event.description}
-            address={event.location.address}
+            address={event?.location?.address}
             startDate={event.date.startDate}
             endDate={event.date.endDate}
             tags={event.tags}
             cover={event.covers}
+            isOnline={event.isOnline ? event.isOnline : false}
           />
         </div>
         <div className={styles.sticker}>
