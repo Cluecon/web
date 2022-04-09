@@ -42,3 +42,18 @@ export type IOTPCode = {
   uid: string
   verified: boolean
 }
+
+export type ICodeData = {
+  code: string
+  counter: number
+  createdAt: {
+    seconds: number
+    nanoseconds: number
+  }
+  eventId: string
+  ownerAdress: string
+  secret: string
+  tokenId: number
+  uid: number
+  verified: boolean
+}

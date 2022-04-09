@@ -1,7 +1,7 @@
 import { collection, query, getDocs, doc, getDoc, where, orderBy, startAt, endAt } from '@firebase/firestore'
 import { setDoc } from 'firebase/firestore' // for adding the Document to Collection
 import { firestore } from '../config/fb'
-import { IEvent, IOTPCode } from '../models/event'
+import { ICodeData, IEvent, IOTPCode } from '../models/event'
 
 const eventsCollection = collection(firestore, 'Events')
 
@@ -68,10 +68,26 @@ export const getEventById = async (uid: string) => {
     const docRef = doc(firestore, 'Events', uid)
     const docSnap = await getDoc(docRef)
     if (docSnap.exists()) {
-      return docSnap.data()
+      return docSnap.data() as IEvent
     } else {
       throw new Error('not found')
     }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const getTicketCodeData = async (eventId: string, ownerAddress: string) => {
+  try {
+    const codes: ICodeData[] = []
+    const codesRef = collection(firestore, 'TicketsOTP')
+    const q = query(codesRef, where('ownerAddress', '==', ownerAddress))
+    const codesSnapshot = await getDocs(q)
+    codesSnapshot.forEach((doc) => {
+      codes.push(doc.data() as ICodeData)
+    })
+    const eventCode = codes.filter((c) => c.eventId === eventId)
+    return eventCode[0]
   } catch (error) {
     console.log(error)
   }

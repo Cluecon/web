@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Button, Spin } from 'antd'
+import { Button, message, Spin } from 'antd'
 import { useRouter } from 'next/router'
 import styles from '../../styles/Details.module.css'
 import DetailsAffix from '../../components/Event/Affix/DetailsAffix'
@@ -83,15 +83,40 @@ function EventDetails() {
         </div>
         <div className={styles.sticker}>
           {userAddress === event.creatorAddress ? (
-            <>
-              <Link href={`/account/myevents/${event.creatorAddress}/${event.uid}`}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <Link href={`/event/myevents/${event.creatorAddress}/${event.uid}`}>
                 <a>
                   <Button type="primary" shape="round" size="large">
                     Dashboard
                   </Button>
                 </a>
               </Link>
-            </>
+              {event.isOnline && (
+                <div style={{ marginTop: 40 }}>
+                  <Button
+                    onClick={async () => {
+                      try {
+                        await axios.delete(`${functionsAPi}/video/api/sessions/${event.uid}`)
+                        const session = await axios.post(`${functionsAPi}/video/api/session`, {
+                          eventId: event.uid,
+                          userAddress: userAddress,
+                        })
+                        console.log(session.data.sessionId)
+                        router.push(`/event/live/${session.data.sessionId}`)
+                      } catch (error) {
+                        console.log(error)
+                        message.error('unable to start livestream!')
+                      }
+                    }}
+                    type="primary"
+                    shape="round"
+                    size="large"
+                  >
+                    Start Event
+                  </Button>
+                </div>
+              )}
+            </div>
           ) : (
             <>
               <DetailsAffix

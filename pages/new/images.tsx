@@ -32,6 +32,12 @@ function Images() {
       Router.push('/new/date')
     } else if (!event.classes && !event.isFree) {
       push('/new/classes')
+    } else if (event.classes && event.classes?.length > 0) {
+      event.classes.map((cl) => {
+        if (!cl.name || !cl.price) {
+          push('/new/classess')
+        }
+      })
     } else {
       try {
         setLoading(true)
