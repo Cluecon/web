@@ -74,7 +74,7 @@ function LiveVideo() {
     getPreData()
   }, [])
 
-  if (loading) {
+  if (loading || !event) {
     return (
       <div
         style={{
