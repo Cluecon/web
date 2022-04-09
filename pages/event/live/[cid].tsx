@@ -59,8 +59,8 @@ function LiveVideo() {
   async function getPreData() {
     try {
       setLoading(true)
-      await getLoggedInAddress()
       await getEvent()
+      await getLoggedInAddress()
       await getSession()
       setLoading(false)
     } catch (error) {
@@ -74,22 +74,6 @@ function LiveVideo() {
     getPreData()
   }, [])
 
-  if (loading || !event) {
-    return (
-      <div
-        style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-        }}
-      >
-        <Spin size="large" />
-      </div>
-    )
-  }
-
-  console.log(event?.creatorAddress)
-  console.log(loggedInAddress)
   if (event && event?.creatorAddress !== loggedInAddress && !isValidCode) {
     return (
       <div
@@ -119,6 +103,23 @@ function LiveVideo() {
       </div>
     )
   }
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+        }}
+      >
+        <Spin size="large" />
+      </div>
+    )
+  }
+
+  console.log(event?.creatorAddress)
+  console.log(loggedInAddress)
 
   return (
     <>
