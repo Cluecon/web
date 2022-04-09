@@ -118,7 +118,7 @@ function LiveVideo() {
     )
   }
 
-  console.log(event?.creatorAddress)
+  console.log(event)
   console.log(loggedInAddress)
 
   return (
