@@ -118,8 +118,9 @@ function LiveVideo() {
     )
   }
 
-  console.log(event)
-  console.log(loggedInAddress)
+  if (!event) {
+    router.push(`/event/live/${cid}`)
+  }
 
   return (
     <>

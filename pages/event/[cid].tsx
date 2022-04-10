@@ -5,8 +5,8 @@ import styles from '../../styles/Details.module.css'
 import DetailsAffix from '../../components/Event/Affix/DetailsAffix'
 import EventBody from '../../components/Event/Body/EventBody'
 import MobileFooter from '../../components/Event/MobileFooter/MobileFooter'
-import { getFirebaseEventById } from '../../services/firebase'
-import { IEvent } from '../../models/event'
+import { getFirebaseEventById, getOwnerTickets, startEvent } from '../../services/firebase'
+import { ICodeData, IEvent } from '../../models/event'
 import axios from 'axios'
 import Head from 'next/head'
 import { getWeb3Address } from '../../utils/web3Login'
@@ -19,23 +19,28 @@ function EventDetails() {
   const [rate, setRate] = useState<string>()
   const [userAddress, setUserAddress] = useState<string | undefined>()
   const [isLoading, setIsLoading] = useState(false)
+  const [userTickets, setUserTickets] = useState<ICodeData[] | undefined>();
   const { cid } = router.query
 
-  const getEventDetails = useCallback(async () => {
+  const getPageData = useCallback(async () => {
     setIsLoading(true)
     const address = await getWeb3Address()
     setUserAddress(address)
     const responseData = await axios.get(`${functionsAPi}/rates/matic`)
     setRate(responseData.data[0].usd)
     const eventUid = cid as string
-    const fbEvent = await getFirebaseEventById(eventUid)
+    const fbEvent = await getFirebaseEventById(eventUid);
     setEvent(fbEvent)
+    const tickets = await getOwnerTickets(cid as string, userAddress as string);
+    if (tickets) {
+      setUserTickets(tickets);
+    }
     setIsLoading(false)
-  }, [cid])
+  }, [])
 
   useEffect(() => {
-    getEventDetails()
-  }, [getEventDetails])
+    getPageData()
+  }, [getPageData])
 
   if (!event) {
     return (
@@ -53,6 +58,83 @@ function EventDetails() {
 
   if (!isLoading && !event) {
     router.push('/404')
+  }
+
+  function renderAffix() {
+    if (userAddress === event?.creatorAddress) {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <Link href={`/event/myevents/${event?.creatorAddress}/${event?.uid}`}>
+            <a>
+              <Button type="primary" shape="round" size="large">
+                Dashboard
+              </Button>
+            </a>
+          </Link>
+          {event?.isOnline && (
+            <div style={{ marginTop: 40 }}>
+              <Button
+                onClick={async () => {
+                  try {
+                    await axios.delete(`${functionsAPi}/video/api/sessions/${event.uid}`)
+                    const session = await axios.post(`${functionsAPi}/video/api/session`, {
+                      eventId: event.uid,
+                      userAddress: userAddress,
+                    })
+                    await startEvent(session.data.sessionId);
+                    router.push(`/event/live/${session.data.sessionId}`)
+                  } catch (error) {
+                    console.log(error)
+                    message.error('unable to start livestream!')
+                  }
+                }}
+                type="primary"
+                shape="round"
+                size="large"
+              >
+                Start Event
+              </Button>
+            </div>
+          )}
+        </div>
+      )
+    }
+    if ((userTickets && userTickets.length > 0) && event?.isOngoing) {
+      return (
+        <div style={{ marginTop: 40 }}>
+          <Button
+            onClick={async () => {
+              try {
+                router.push(`/event/live/${event.uid}`)
+              } catch (error) {
+                console.log(error)
+                message.error('unable to join event!')
+              }
+            }}
+            type="primary"
+            shape="round"
+            size="large"
+          >
+            Attend Event
+          </Button>
+        </div>
+      )
+    }
+    if (event) {
+      return (
+        <>
+          <DetailsAffix
+            isFree={event.isFree}
+            classes={event.classes}
+            ipfsUrl={event.ipfsAdress}
+            creator={event.creatorAddress}
+            rate={rate as string}
+            eventId={cid as string}
+          />
+        </>
+      )
+
+    }
   }
 
   return (
@@ -81,55 +163,7 @@ function EventDetails() {
             isOnline={event.isOnline ? event.isOnline : false}
           />
         </div>
-        <div className={styles.sticker}>
-          {userAddress === event.creatorAddress ? (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <Link href={`/event/myevents/${event.creatorAddress}/${event.uid}`}>
-                <a>
-                  <Button type="primary" shape="round" size="large">
-                    Dashboard
-                  </Button>
-                </a>
-              </Link>
-              {event.isOnline && (
-                <div style={{ marginTop: 40 }}>
-                  <Button
-                    onClick={async () => {
-                      try {
-                        await axios.delete(`${functionsAPi}/video/api/sessions/${event.uid}`)
-                        const session = await axios.post(`${functionsAPi}/video/api/session`, {
-                          eventId: event.uid,
-                          userAddress: userAddress,
-                        })
-                        console.log(session.data.sessionId)
-                        router.push(`/event/live/${session.data.sessionId}`)
-                      } catch (error) {
-                        console.log(error)
-                        message.error('unable to start livestream!')
-                      }
-                    }}
-                    type="primary"
-                    shape="round"
-                    size="large"
-                  >
-                    Start Event
-                  </Button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <>
-              <DetailsAffix
-                isFree={event.isFree}
-                classes={event.classes}
-                ipfsUrl={event.ipfsAdress}
-                creator={event.creatorAddress}
-                rate={rate as string}
-                eventId={cid as string}
-              />
-            </>
-          )}
-        </div>
+        {renderAffix()}
       </div>
       <div className={styles.footer}>
         <MobileFooter

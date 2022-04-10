@@ -22,6 +22,7 @@ export type IEvent = {
     amount: string
   }[]
   isFree: boolean
+  isOngoing: boolean
   isOnline: boolean
   ticketArt?: string
   covers?: string

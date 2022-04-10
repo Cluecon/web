@@ -1,4 +1,4 @@
-import { collection, query, getDocs, doc, getDoc, where, orderBy, startAt, endAt } from '@firebase/firestore'
+import { collection, query, getDocs, doc, getDoc, where, orderBy, startAt, endAt, updateDoc } from '@firebase/firestore'
 import { setDoc } from 'firebase/firestore' // for adding the Document to Collection
 import { firestore } from '../config/fb'
 import { ICodeData, IEvent, IOTPCode } from '../models/event'
@@ -91,6 +91,39 @@ export const getTicketCodeData = async (eventId: string, ownerAddress: string) =
   } catch (error) {
     console.log(error)
   }
+}
+
+export const getOwnerTickets = async (eventId: string, userAddress: string) => {
+  try {
+    const events: ICodeData[] = []
+    const codesRef = collection(firestore, 'TicketsOTP')
+    const q = query(codesRef, where('eventId', '==', eventId))
+    const codesSnapshot = await getDocs(q)
+    codesSnapshot.forEach((doc) => {
+      events.push(doc.data() as ICodeData)
+    })
+    const tickets = events.filter((c) => c.ownerAdress === userAddress)
+    return tickets[0]
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+export const startEvent = async (eventId: string) => {
+  const eventsRef = doc(firestore, 'Events', eventId);
+  await updateDoc(eventsRef, {
+    isOngoing: true,
+    startedTime: new Date().getTime()
+  });
+}
+
+export const stopEvent = async (eventId: string) => {
+  const eventsRef = doc(firestore, 'Events', eventId);
+  await updateDoc(eventsRef, {
+    isOngoing: false,
+    stoppedTime: new Date().getTime()
+  });
 }
 
 export const getFirebaseEvents = async () => {
