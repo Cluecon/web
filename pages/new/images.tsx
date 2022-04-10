@@ -7,7 +7,7 @@ import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { v4 as uuidv4 } from 'uuid'
 import styles from '../../styles/New.module.css'
 import { useNewEventContext } from '../../context/newEvent'
-import Router, { useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { saveEventToFirebase } from '../../services/firebase'
 import { getWeb3Address } from '../../utils/web3Login'
 import { IEvent } from '../../models/event'
@@ -29,7 +29,7 @@ function Images() {
     } else if (!event.description) {
       push('/new/description')
     } else if (!event.date) {
-      Router.push('/new/date')
+      push('/new/date')
     } else if (!event.classes && !event.isFree) {
       push('/new/classes')
     } else if (event.classes && event.classes?.length > 0) {
