@@ -19,7 +19,7 @@ function EventDetails() {
   const [rate, setRate] = useState<string>()
   const [userAddress, setUserAddress] = useState<string | undefined>()
   const [isLoading, setIsLoading] = useState(false)
-  const [userTickets, setUserTickets] = useState<ICodeData[] | undefined>();
+  const [userTickets, setUserTickets] = useState<ICodeData[] | undefined>()
   const { cid } = router.query
 
   const getPageData = useCallback(async () => {
@@ -29,11 +29,11 @@ function EventDetails() {
     const responseData = await axios.get(`${functionsAPi}/rates/matic`)
     setRate(responseData.data[0].usd)
     const eventUid = cid as string
-    const fbEvent = await getFirebaseEventById(eventUid);
+    const fbEvent = await getFirebaseEventById(eventUid)
     setEvent(fbEvent)
-    const tickets = await getOwnerTickets(cid as string, userAddress as string);
+    const tickets = await getOwnerTickets(cid as string, userAddress as string)
     if (tickets) {
-      setUserTickets(tickets);
+      setUserTickets(tickets as ICodeData[])
     }
     setIsLoading(false)
   }, [])
@@ -81,7 +81,7 @@ function EventDetails() {
                       eventId: event.uid,
                       userAddress: userAddress,
                     })
-                    await startEvent(session.data.sessionId);
+                    await startEvent(session.data.sessionId)
                     router.push(`/event/live/${session.data.sessionId}`)
                   } catch (error) {
                     console.log(error)
@@ -99,7 +99,7 @@ function EventDetails() {
         </div>
       )
     }
-    if ((userTickets && userTickets.length > 0) && event?.isOngoing) {
+    if (userTickets && userTickets.length > 0 && event?.isOngoing) {
       return (
         <div style={{ marginTop: 40 }}>
           <Button
@@ -133,7 +133,6 @@ function EventDetails() {
           />
         </>
       )
-
     }
   }
 

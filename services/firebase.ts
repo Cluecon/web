@@ -103,27 +103,26 @@ export const getOwnerTickets = async (eventId: string, userAddress: string) => {
       events.push(doc.data() as ICodeData)
     })
     const tickets = events.filter((c) => c.ownerAdress === userAddress)
-    return tickets[0]
+    return tickets as ICodeData[]
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
 }
 
-
 export const startEvent = async (eventId: string) => {
-  const eventsRef = doc(firestore, 'Events', eventId);
+  const eventsRef = doc(firestore, 'Events', eventId)
   await updateDoc(eventsRef, {
     isOngoing: true,
-    startedTime: new Date().getTime()
-  });
+    startedTime: new Date().getTime(),
+  })
 }
 
 export const stopEvent = async (eventId: string) => {
-  const eventsRef = doc(firestore, 'Events', eventId);
+  const eventsRef = doc(firestore, 'Events', eventId)
   await updateDoc(eventsRef, {
     isOngoing: false,
-    stoppedTime: new Date().getTime()
-  });
+    stoppedTime: new Date().getTime(),
+  })
 }
 
 export const getFirebaseEvents = async () => {

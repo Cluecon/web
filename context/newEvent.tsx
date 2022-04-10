@@ -22,7 +22,7 @@ export type INewEvent = {
   }
   isFree?: boolean
   isOnline?: boolean
-  isOngoing: boolean
+  isOngoing?: boolean
   classes?: {
     id: number
     name: string
