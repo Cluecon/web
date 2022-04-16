@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 // NEXT_PUBLIC_FIREBASE_API_KEY = "AIzaSyBQxJ7TJiRkUntParr2wV3qWXLwTPWrWSk"
@@ -13,7 +14,7 @@ import { getFirestore } from 'firebase/firestore'
 // FIREBASE_API="https://us-central1-clueconn-73e93.cloudfunctions.net/api"
 // NODE_ENV="development"
 
-initializeApp({
+const app = initializeApp({
   apiKey: 'AIzaSyBQxJ7TJiRkUntParr2wV3qWXLwTPWrWSk',
   authDomain: 'clueconn-73e93.firebaseapp.com',
   projectId: 'clueconn-73e93',
@@ -23,6 +24,7 @@ initializeApp({
   measurementId: 'G-EVC0R7RD07',
 })
 
-const firestore = getFirestore()
+const firestore = getFirestore(app)
+const firebaseAuth = getAuth(app)
 
-export { firestore }
+export { firestore, firebaseAuth }

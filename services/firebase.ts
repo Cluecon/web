@@ -2,6 +2,7 @@ import { collection, query, getDocs, doc, getDoc, where, orderBy, startAt, endAt
 import { setDoc } from 'firebase/firestore' // for adding the Document to Collection
 import { firestore } from '../config/fb'
 import { ICodeData, IEvent, IOTPCode } from '../models/event'
+import { IUser } from '../models/user'
 
 const eventsCollection = collection(firestore, 'Events')
 
@@ -15,6 +16,51 @@ export const saveEventToFirebase = async (event: IEvent) => {
     return savedEvent
   } catch (error: any) {
     throw new Error(error)
+  }
+}
+
+export const getUserByUsername = async (username: string) => {
+  try {
+    const users: IUser[] = []
+    const usersRef = collection(firestore, 'Users')
+    const q = query(usersRef, where('username', '==', username))
+    const usersSnapshot = await getDocs(q)
+    usersSnapshot.forEach((doc) => {
+      users.push(doc.data() as IUser)
+    })
+    if (users.length) {
+      return users[0]
+    } else {
+      return null
+    }
+  } catch (error) {
+    console.log('error', error)
+  }
+}
+
+export const createUser = async (user: IUser) => {
+  const timestamp: string = Date.now().toString()
+  const _user = doc(firestore, `Users/${user.uid}`)
+  const toSaveUser = { ...user, createdAt: timestamp }
+  try {
+    await setDoc(_user, toSaveUser)
+  } catch (error: any) {
+    throw new Error(error)
+  }
+}
+
+export const geUserById = async (uid: string) => {
+  try {
+    const userRef = doc(firestore, 'Users', uid)
+    const userSnap = await getDoc(userRef)
+    if (userSnap.exists()) {
+      return userSnap.data() as IUser
+    } else {
+      return undefined
+    }
+  } catch (error: any) {
+    console.log('error', error)
+    // throw new Error(error)
   }
 }
 

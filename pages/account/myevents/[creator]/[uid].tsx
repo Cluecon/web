@@ -2,13 +2,7 @@
 import { Button, Spin, Table, Modal, Input, message } from 'antd'
 import { useRouter } from 'next/router'
 import React, { useState, useEffect } from 'react'
-import Web3Modal from 'web3modal'
-import { ethers } from 'ethers'
-import { getWeb3Address } from '../../../../utils/web3Login'
-import { clueconnTicketsAddress } from '../../../../config'
-import ClueconnTickets from '../../../../artifacts/contracts/ClueconnTickets.sol/ClueconnTickets.json'
 import axios from 'axios'
-import { getCodesByEventId } from '../../../../services/firebase'
 import { functionsAPi } from '../../../../utils/functionsapi'
 
 function MyEventDetail() {
@@ -85,42 +79,7 @@ function MyEventDetail() {
   // }
 
   async function loadData() {
-    setIsLoading(true)
-    const address = await getWeb3Address()
-    setCurrentUserAddress(address)
-    const web3Modal = new Web3Modal()
-    const connection = await web3Modal.connect()
-    const provider = new ethers.providers.Web3Provider(connection)
-    const signer = provider.getSigner()
-    const otpCodes = await getCodesByEventId(uid as string)
-
-    const clueconnTicketContract = new ethers.Contract(clueconnTicketsAddress, ClueconnTickets.abi, signer)
-    const data = await clueconnTicketContract.fetchEventTickets(uid)
-    const items = await Promise.all(
-      data &&
-        data.map(
-          async (i: {
-            tokenId: { toNumber: () => any }
-            price: { toString: () => ethers.BigNumberish }
-            creator: any
-            owner: any
-            scanned: any
-          }) => {
-            const price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-            const codeArray = otpCodes && otpCodes.filter((c) => c.tokenId == i.tokenId.toNumber().toString())
-            const item = {
-              key: i.tokenId.toNumber().toString(),
-              owner: i.owner,
-              price: price,
-              scanned: codeArray && codeArray.length > 0 && codeArray[0].verified.toString(),
-              verify: i.tokenId.toNumber().toString(),
-            }
-            return item
-          }
-        )
-    )
-    setEvents(items)
-    setIsLoading(false)
+    console.log('load data')
   }
 
   useEffect(() => {

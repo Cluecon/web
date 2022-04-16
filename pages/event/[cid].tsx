@@ -5,11 +5,9 @@ import styles from '../../styles/Details.module.css'
 import DetailsAffix from '../../components/Event/Affix/DetailsAffix'
 import EventBody from '../../components/Event/Body/EventBody'
 import MobileFooter from '../../components/Event/MobileFooter/MobileFooter'
-import { getFirebaseEventById, getOwnerTickets, startEvent } from '../../services/firebase'
 import { ICodeData, IEvent } from '../../models/event'
 import axios from 'axios'
 import Head from 'next/head'
-import { getWeb3Address } from '../../utils/web3Login'
 import Link from 'next/link'
 import { functionsAPi } from '../../utils/functionsapi'
 
@@ -22,25 +20,8 @@ function EventDetails() {
   const [userTickets, setUserTickets] = useState<ICodeData[] | undefined>()
   const { cid } = router.query
 
-  const getPageData = useCallback(async () => {
-    setIsLoading(true)
-    const address = await getWeb3Address()
-    setUserAddress(address)
-    const responseData = await axios.get(`${functionsAPi}/rates/matic`)
-    setRate(responseData.data[0].usd)
-    const eventUid = cid as string
-    const fbEvent = await getFirebaseEventById(eventUid)
-    setEvent(fbEvent)
-    const tickets = await getOwnerTickets(cid as string, userAddress as string)
-    if (tickets) {
-      setUserTickets(tickets as ICodeData[])
-    }
-    setIsLoading(false)
-  }, [])
-
-  useEffect(() => {
-    getPageData()
-  }, [getPageData])
+  // useEffect(() => {
+  // }, [])
 
   if (!event) {
     return (
@@ -76,13 +57,7 @@ function EventDetails() {
               <Button
                 onClick={async () => {
                   try {
-                    await axios.delete(`${functionsAPi}/video/api/sessions/${event.uid}`)
-                    const session = await axios.post(`${functionsAPi}/video/api/session`, {
-                      eventId: event.uid,
-                      userAddress: userAddress,
-                    })
-                    await startEvent(session.data.sessionId)
-                    router.push(`/event/live/${session.data.sessionId}`)
+                    console.log("Success'clicked")
                   } catch (error) {
                     console.log(error)
                     message.error('unable to start livestream!')
@@ -127,7 +102,6 @@ function EventDetails() {
             isFree={event.isFree}
             classes={event.classes}
             ipfsUrl={event.ipfsAdress}
-            creator={event.creatorAddress}
             rate={rate as string}
             eventId={cid as string}
           />
@@ -169,7 +143,6 @@ function EventDetails() {
           isFree={event.isFree}
           classes={event.classes}
           ipfsUrl={event.ipfsAdress}
-          creator={event.creatorAddress}
           rate={rate as string}
           eventId={cid as string}
         />

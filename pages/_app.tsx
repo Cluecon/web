@@ -6,10 +6,10 @@ import Script from 'next/script'
 import { isMobile } from 'react-device-detect'
 import Navbar from '../components/Navbar'
 import { NewEventWrapper } from '../context/newEvent'
-import { WalletWrapper } from '../context/Wallet'
 import { Typography } from 'antd'
 
 import 'regenerator-runtime/runtime'
+import { UserWrapper } from '../context/user'
 
 const { Title } = Typography
 
@@ -37,13 +37,13 @@ function MyApp({ Component, pageProps }: AppProps) {
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAGvZcCyI8iQgz9NwFgPJ0bKQAiwwrO13s&libraries=places"
         strategy="beforeInteractive"
       />
-      <WalletWrapper>
+      <UserWrapper>
         <Navbar />
         <NextNProgress color="#d818ff" startPosition={0.3} stopDelayMs={200} height={3} showOnShallow={true} />
         <NewEventWrapper>
           <Component {...pageProps} />
         </NewEventWrapper>
-      </WalletWrapper>
+      </UserWrapper>
     </>
   )
 }

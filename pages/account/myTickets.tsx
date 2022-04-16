@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import Web3Modal from 'web3modal'
-import { ethers } from 'ethers'
 import { useRouter } from 'next/router'
 import UserContent from '../../components/account/UserContent'
-import { ticketAddress, clueconnTicketsAddress } from '../../config'
-import Ticket from '../../artifacts/contracts/Ticket.sol/Ticket.json'
-import ClueconnTickets from '../../artifacts/contracts/ClueconnTickets.sol/ClueconnTickets.json'
-import axios from 'axios'
 import { Spin, Typography } from 'antd'
 import { IEvent } from '../../models/event'
 import Head from 'next/head'
@@ -20,39 +14,7 @@ function UserProfile() {
 
   async function loadTickets() {
     try {
-      setIsLoading(true)
-      const web3Modal = new Web3Modal()
-      const connection = await web3Modal.connect()
-      const provider = new ethers.providers.Web3Provider(connection)
-      const signer = provider.getSigner()
-
-      const clueconnTicketContract = new ethers.Contract(clueconnTicketsAddress, ClueconnTickets.abi, signer)
-      const tokenContract = new ethers.Contract(ticketAddress, Ticket.abi, provider)
-      const data = await clueconnTicketContract.fetchMyTickets()
-      const items = await Promise.all(
-        data.map(
-          async (i: {
-            tokenId: { toNumber: () => any }
-            price: { toString: () => ethers.BigNumberish }
-            creator: any
-            owner: any
-          }) => {
-            const tokenUri = await tokenContract.tokenURI(i.tokenId)
-            const meta = await axios.get(tokenUri)
-            const price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-            const item = {
-              price,
-              tokenId: i.tokenId.toNumber(),
-              creator: i.creator,
-              owner: i.owner,
-              ...meta.data,
-            }
-            return item
-          }
-        )
-      )
-      setTickets(items)
-      setIsLoading(false)
+      console.log('load my tickets')
     } catch (error) {
       console.log('error', error)
       router.push('/500')
@@ -110,6 +72,7 @@ function UserProfile() {
       <div>{/* <Cover /> */}</div>
       <div>{/* <UserInfo /> */}</div>
       <div>
+        <h2>My tickets</h2>
         <UserContent events={tickets} />
       </div>
     </>

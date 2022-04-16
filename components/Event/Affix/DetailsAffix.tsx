@@ -1,16 +1,9 @@
 import React, { useState } from 'react'
 import { Card, Affix, Typography, Button, Spin } from 'antd'
 import Select from 'react-select'
-import Web3Modal from 'web3modal'
-import { ethers } from 'ethers'
 import Image from 'next/image'
 import styles from '../../../styles/Details.module.css'
-import ClueconnTickets from '../../../artifacts/contracts/ClueconnTickets.sol/ClueconnTickets.json'
-import Ticket from '../../../artifacts/contracts/Ticket.sol/Ticket.json'
-import { clueconnTicketsAddress, ticketAddress } from '../../../config'
 import { parseInt } from 'lodash'
-import axios from 'axios'
-import { functionsAPi } from '../../../utils/functionsapi'
 
 const { Title } = Typography
 
@@ -25,7 +18,6 @@ export type DetailsAffixProps = {
   classes?: IClass[]
   isFree: boolean
   ipfsUrl: string
-  creator: string
   rate: string
   eventId: string
 }
@@ -82,44 +74,7 @@ function DetailsAffix(props: DetailsAffixProps) {
       alert('Please select ticket option')
     } else {
       try {
-        const web3Modal = new Web3Modal()
-        const connection = await web3Modal.connect()
-        const provider = new ethers.providers.Web3Provider(connection)
-        const signer = provider.getSigner()
-
-        /* next, create the ticket */
-        let contract = new ethers.Contract(ticketAddress, Ticket.abi, signer)
-        let transaction = await contract.createToken(props.ipfsUrl)
-        const tx = await transaction.wait()
-        const event = tx.events[0]
-        const value = event.args[2]
-        const tokenId = value.toNumber()
-        const mFloat = parseInt(ticketPrice as string) / parseFloat(props.rate)
-        const toSavePrice = ticketPrice === 'Free' || props.isFree ? 0 : mFloat
-        const price = ethers.utils.parseUnits(toSavePrice.toString(), 'ether')
-        contract = new ethers.Contract(clueconnTicketsAddress, ClueconnTickets.abi, signer)
-        let listingPrice = await contract.getTicketListingPrice()
-        listingPrice = listingPrice.toString()
-        transaction = await contract.createTicket(ticketAddress, tokenId, price, props.creator, props.eventId, {
-          value: listingPrice,
-        })
-        const address = await signer.getAddress()
-        await axios.post(`${functionsAPi}/generateticketcode`, {
-          ownerAddress: address,
-          eventId: props.eventId,
-          tokenId: tokenId,
-        })
-        await transaction.wait()
-
-        // Buy Ticket
-
-        contract = new ethers.Contract(clueconnTicketsAddress, ClueconnTickets.abi, signer)
-        const buyPrice = ethers.utils.parseUnits(toSavePrice.toString(), 'ether')
-        transaction = await contract.createTicketSale(ticketAddress, tokenId, {
-          value: buyPrice,
-        })
-        await transaction.wait()
-        setIsTransactionLoading(false)
+        console.log('buy ticket')
       } catch (error) {
         setIsTransactionLoading(false)
         console.log('error', error)

@@ -9,9 +9,9 @@ import styles from '../../styles/New.module.css'
 import { useNewEventContext } from '../../context/newEvent'
 import { useRouter } from 'next/router'
 import { saveEventToFirebase } from '../../services/firebase'
-import { getWeb3Address } from '../../utils/web3Login'
 import { IEvent } from '../../models/event'
 import Head from 'next/head'
+import { useUserContext } from '../../context/user'
 
 const { Title } = Typography
 const { Dragger } = Upload
@@ -21,6 +21,7 @@ const client = ipfsHttpClient({ url: 'https://ipfs.infura.io:5001/api/v0' })
 function Images() {
   const { push } = useRouter()
   const { event, updateNewEvent } = useNewEventContext()
+  const { user } = useUserContext()
   const [loading, setLoading] = useState(false)
 
   async function uploadToIpfs() {
@@ -42,13 +43,12 @@ function Images() {
       try {
         setLoading(true)
         const tagsList = event.tags?.filter((t) => t.isSelected).map((tag) => tag.name)
-        const address = await getWeb3Address()
         const uid = uuidv4()
         const toIpfs = {
           ...event,
           tags: tagsList,
-          creatorAddress: address,
           uid: uid,
+          creatorUid: user?.uid,
           location: event.location ? event.location : null,
         } as IEvent
         const added = await client.add(JSON.stringify(toIpfs))
@@ -101,6 +101,10 @@ function Images() {
         message.error(`${info.file.name} file upload failed.`)
       }
     },
+  }
+
+  if (!user) {
+    push('/403')
   }
 
   return (

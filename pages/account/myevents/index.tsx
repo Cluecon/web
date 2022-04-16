@@ -6,7 +6,6 @@ import { no_image } from '../../../components/account/UserContent'
 import EventCard from '../../../components/Card/EventCard'
 import { IEvent } from '../../../models/event'
 import { getFirebaseEventsByAdress } from '../../../services/firebase'
-import { getWeb3Address } from '../../../utils/web3Login'
 
 const { Title } = Typography
 
@@ -15,11 +14,7 @@ function MyEvents() {
   const [isLoading, setIsLoading] = useState(false)
 
   async function loadEvents() {
-    setIsLoading(true)
-    const address = await getWeb3Address()
-    const myevents = await getFirebaseEventsByAdress(address)
-    setEvents(myevents as IEvent[])
-    setIsLoading(false)
+    console.log('load events')
   }
 
   useEffect(() => {
