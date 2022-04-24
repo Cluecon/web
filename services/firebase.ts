@@ -1,10 +1,14 @@
 import { collection, query, getDocs, doc, getDoc, where, orderBy, startAt, endAt, updateDoc } from '@firebase/firestore'
 import { setDoc } from 'firebase/firestore' // for adding the Document to Collection
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
+import { v4 as uuidv4 } from 'uuid'
 import { firestore } from '../config/fb'
 import { ICodeData, IEvent, IOTPCode } from '../models/event'
+import { ITicket } from '../models/Ticket'
 import { IUser } from '../models/user'
 
 const eventsCollection = collection(firestore, 'Events')
+const storage = getStorage()
 
 export const saveEventToFirebase = async (event: IEvent) => {
   const timestamp: string = Date.now().toString()
@@ -49,7 +53,7 @@ export const createUser = async (user: IUser) => {
   }
 }
 
-export const geUserById = async (uid: string) => {
+export const getUserById = async (uid: string) => {
   try {
     const userRef = doc(firestore, 'Users', uid)
     const userSnap = await getDoc(userRef)
@@ -199,10 +203,103 @@ export const getEventsByBounds = async (bounds: string[][]) => {
   // get the todos
   const querySnapshot = await getDocs(eventsQuery)
 
-  // map through todos adding them to an array
+  // map through todstripe trigger payment_intent.succeededos adding them to an array
   const result: IEvent[] = []
   querySnapshot.forEach((snapshot) => {
     result.push(snapshot.data() as IEvent)
   })
   return result
+}
+
+export const updateUserCover = async (cover: string, userId: string) => {
+  const userRef = doc(firestore, 'Users', userId)
+  await updateDoc(userRef, {
+    coverPic: cover,
+  })
+}
+
+export const updateUserAvatar = async (avatar: string, userId: string) => {
+  const userRef = doc(firestore, 'Users', userId)
+  await updateDoc(userRef, {
+    profilePic: avatar,
+  })
+}
+
+export const updateUserDetails = async (username: string, address: string, userId: string) => {
+  const userRef = doc(firestore, 'Users', userId)
+  const user = await getUserByUsername(username)
+  if (user) {
+    throw new Error('username already taken')
+  } else {
+    await updateDoc(userRef, {
+      username: username,
+      walletAddress: address,
+    })
+  }
+}
+
+export const getEventsByUserId = async (userId: string) => {
+  try {
+    const events: IEvent[] = []
+    const eventsRef = collection(firestore, 'Events')
+    const q = query(eventsRef, where('creatorUid', '==', userId))
+    const eventsSnapshot = await getDocs(q)
+    eventsSnapshot.forEach((doc) => {
+      events.push(doc.data() as IEvent)
+    })
+    console.log('user events', events)
+    return events
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const addTicketToFirebase = async (eventId: string, userId: string, sessionId: string) => {
+  try {
+    const event = await getEventById(eventId)
+    if (!event) {
+      throw new Error('Event not found!')
+    } else {
+      const user = await getUserById(userId)
+      if (!user) {
+        throw new Error('User not found!')
+      } else {
+        const timestamp: string = Date.now().toString()
+        const _ticket = doc(firestore, `Events/${event.uid}/Tickets/${sessionId}`)
+        const _ticketMetadata = {
+          sessionId: sessionId,
+          owner: user,
+          createdAt: timestamp,
+        }
+        try {
+          await setDoc(_ticket, _ticketMetadata)
+          const savedTicket = await getFirebaseTicket(event.uid, _ticketMetadata.sessionId, user.uid)
+          return savedTicket
+        } catch (error: any) {
+          throw new Error(error)
+        }
+      }
+    }
+  } catch (error: any) {
+    throw new Error(error)
+  }
+}
+
+export const getFirebaseTicket = async (eventId: string, sessionId: string, userId: string) => {
+  try {
+    const docRef = doc(firestore, `Events/${eventId}/Tickets`, sessionId)
+    const docSnap = await getDoc(docRef)
+    if (docSnap.exists()) {
+      const _t = docSnap.data() as ITicket
+      if (_t.owner.uid !== userId) {
+        throw new Error('not authorized')
+      } else {
+        return _t
+      }
+    } else {
+      throw new Error('not found')
+    }
+  } catch (error: any) {
+    throw new Error(error)
+  }
 }

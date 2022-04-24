@@ -7,7 +7,7 @@ import { LoginOutlined, AppstoreAddOutlined } from '@ant-design/icons'
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import styles from './Navbar.module.css'
 import { useUserContext } from '../../context/user'
-import { createUser, getUserByUsername, geUserById } from '../../services/firebase'
+import { createUser, getUserByUsername, getUserById } from '../../services/firebase'
 import { IUser } from '../../models/user'
 
 const { TabPane } = Tabs
@@ -65,7 +65,7 @@ function Navbar() {
           username: values.username,
         }
         await createUser(registeredUser)
-        const userDetails = await geUserById(userCredentials.user.uid)
+        const userDetails = await getUserById(userCredentials.user.uid)
         if (userDetails) {
           updateUser(userDetails)
         }

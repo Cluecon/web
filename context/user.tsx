@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { IUser } from '../models/user'
-import { geUserById } from '../services/firebase'
+import { getUserById } from '../services/firebase'
 
 export type IUserContext = {
   user?: IUser
@@ -29,7 +29,7 @@ export const UserWrapper = ({ children }: UserWrapperProps) => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const uid = user.uid
-        const userDetails = await geUserById(uid)
+        const userDetails = await getUserById(uid)
         setUser(userDetails)
       } else {
         setUser(undefined)

@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
-import { Card, Affix, Typography, Button, Spin } from 'antd'
+import { Card, Affix, Typography, Button, Spin, message } from 'antd'
 import Select from 'react-select'
-import Image from 'next/image'
 import styles from '../../../styles/Details.module.css'
 import { parseInt } from 'lodash'
+import { fetchPostJSON } from '../../../utils/api-helpers'
+import { getStripe } from '../../../utils/stripe'
+import { useUserContext } from '../../../context/user'
 
 const { Title } = Typography
 
@@ -45,6 +47,7 @@ function DetailsAffix(props: DetailsAffixProps) {
   const [selectedOption, setSelectedOption] = useState<{ label: string; value: string } | null>(null)
   const [ticketPrice, setTicketPrice] = useState<string | undefined>()
   const [isTransctionLoading, setIsTransactionLoading] = useState(false)
+  const { user } = useUserContext()
 
   function renderPrice() {
     if (props.isFree) {
@@ -59,26 +62,53 @@ function DetailsAffix(props: DetailsAffixProps) {
       return (
         <div style={{ display: 'flex' }}>
           ${ticketPrice}
-          <div style={{ margin: '0px 10px 0px 10px' }}>
+          {/* <div style={{ margin: '0px 10px 0px 10px' }}>
             <Image src="/assets/polygon.png" alt="me" width="20" height="20" />
           </div>
-          {parseFloat(pMatic) > 0 ? pMatic : 0} MATIC
+          {parseFloat(pMatic) > 0 ? pMatic : 0} MATIC */}
         </div>
       )
     }
   }
 
   async function buyTicket() {
-    setIsTransactionLoading(true)
-    if (!ticketPrice && !props.isFree) {
-      alert('Please select ticket option')
-    } else {
-      try {
-        console.log('buy ticket')
-      } catch (error) {
-        setIsTransactionLoading(false)
-        console.log('error', error)
+    if (user) {
+      setIsTransactionLoading(true)
+      if (!ticketPrice && !props.isFree) {
+        alert('Please select ticket option')
+      } else {
+        try {
+          if (ticketPrice) {
+            console.log('buy ticket')
+            const response = await fetchPostJSON('/api/checkout_sessions', {
+              amount: parseFloat(ticketPrice),
+              eventId: props.eventId,
+              userId: user?.uid,
+            })
+            if (response.statusCode === 500) {
+              console.error(response.message)
+              message.error('Internal Server Error!')
+              setIsTransactionLoading(false)
+              return
+            }
+            const stripe = await getStripe()
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const { error } = await stripe!.redirectToCheckout({
+              // Make the id field from the Checkout Session creation API response
+              // available to this file, so you can provide it as parameter here
+              // instead of the {{CHECKOUT_SESSION_ID}} placeholder.
+              sessionId: response.id,
+            })
+            console.warn(error.message)
+            setIsTransactionLoading(false)
+          }
+        } catch (error) {
+          setIsTransactionLoading(false)
+          console.log('error', error)
+        }
       }
+    } else {
+      alert('You must be logged in to purchase a ticket')
     }
   }
 

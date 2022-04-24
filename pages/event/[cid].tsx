@@ -10,6 +10,8 @@ import axios from 'axios'
 import Head from 'next/head'
 import Link from 'next/link'
 import { functionsAPi } from '../../utils/functionsapi'
+import { getEventById } from '../../services/firebase'
+import { useUserContext } from '../../context/user'
 
 function EventDetails() {
   const router = useRouter()
@@ -19,11 +21,27 @@ function EventDetails() {
   const [isLoading, setIsLoading] = useState(false)
   const [userTickets, setUserTickets] = useState<ICodeData[] | undefined>()
   const { cid } = router.query
+  const { user } = useUserContext()
 
-  // useEffect(() => {
-  // }, [])
+  async function fetchEventDetails() {
+    setIsLoading(true)
+    if (cid) {
+      const ev = await getEventById(cid as string)
+      if (ev) {
+        setEvent(ev)
+        setIsLoading(false)
+      } else {
+        router.push('/404')
+      }
+    }
+    setIsLoading(false)
+  }
 
-  if (!event) {
+  useEffect(() => {
+    fetchEventDetails()
+  }, [])
+
+  if (isLoading) {
     return (
       <div
         style={{
@@ -37,22 +55,18 @@ function EventDetails() {
     )
   }
 
-  if (!isLoading && !event) {
-    router.push('/404')
-  }
-
   function renderAffix() {
-    if (userAddress === event?.creatorAddress) {
+    if (user?.uid === event?.creatorUid) {
       return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <Link href={`/event/myevents/${event?.creatorAddress}/${event?.uid}`}>
+          <Link href={`/event/myevents/${event?.creatorUid}/${event?.uid}`}>
             <a>
               <Button type="primary" shape="round" size="large">
                 Dashboard
               </Button>
             </a>
           </Link>
-          {event?.isOnline && (
+          {/* {event?.isOnline && (
             <div style={{ marginTop: 40 }}>
               <Button
                 onClick={async () => {
@@ -70,31 +84,31 @@ function EventDetails() {
                 Start Event
               </Button>
             </div>
-          )}
+          )} */}
         </div>
       )
     }
-    if (userTickets && userTickets.length > 0 && event?.isOngoing) {
-      return (
-        <div style={{ marginTop: 40 }}>
-          <Button
-            onClick={async () => {
-              try {
-                router.push(`/event/live/${event.uid}`)
-              } catch (error) {
-                console.log(error)
-                message.error('unable to join event!')
-              }
-            }}
-            type="primary"
-            shape="round"
-            size="large"
-          >
-            Attend Event
-          </Button>
-        </div>
-      )
-    }
+    // if (userTickets && userTickets.length > 0 && event?.isOngoing) {
+    //   return (
+    //     <div style={{ marginTop: 40 }}>
+    //       <Button
+    //         onClick={async () => {
+    //           try {
+    //             router.push(`/event/live/${event.uid}`)
+    //           } catch (error) {
+    //             console.log(error)
+    //             message.error('unable to join event!')
+    //           }
+    //         }}
+    //         type="primary"
+    //         shape="round"
+    //         size="large"
+    //       >
+    //         Attend Event
+    //       </Button>
+    //     </div>
+    //   )
+    // }
     if (event) {
       return (
         <>
@@ -113,8 +127,8 @@ function EventDetails() {
   return (
     <div style={{ position: 'relative' }}>
       <Head>
-        <title>{event.title}</title>
-        <meta name="description" content={event.description.substring(0, 150)} />
+        <title>{event?.title}</title>
+        <meta name="description" content={event?.description.substring(0, 150)} />
         <link rel="icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -126,23 +140,23 @@ function EventDetails() {
       <div className={styles.container}>
         <div className={styles.body}>
           <EventBody
-            title={event.title}
-            description={event.description}
+            title={event?.title as string}
+            description={event?.description as string}
             address={event?.location?.address}
-            startDate={event.date.startDate}
-            endDate={event.date.endDate}
-            tags={event.tags}
-            cover={event.covers}
-            isOnline={event.isOnline ? event.isOnline : false}
+            startDate={event?.date.startDate as string}
+            endDate={event?.date.endDate as string}
+            tags={event?.tags}
+            cover={event?.covers}
+            isOnline={event?.isOnline ? event.isOnline : false}
           />
         </div>
         {renderAffix()}
       </div>
       <div className={styles.footer}>
         <MobileFooter
-          isFree={event.isFree}
-          classes={event.classes}
-          ipfsUrl={event.ipfsAdress}
+          isFree={event?.isFree as boolean}
+          classes={event?.classes}
+          ipfsUrl={event?.ipfsAdress as string}
           rate={rate as string}
           eventId={cid as string}
         />
